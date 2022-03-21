@@ -1,34 +1,30 @@
 package database
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
+	"github.com/MonikaCat/ibc-token/database/config"
 
-	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
+	types "github.com/MonikaCat/ibc-token/token"
 )
 
-func GetDatabase() (*Database, error) {
-	// PSQL connection
-	connStr := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		os.Getenv("PGHOST"), os.Getenv("PGPORT"), os.Getenv("PGDATABASE"), os.Getenv("PGUSER"), os.Getenv("PGPASSWORD"),
-	)
+type Database interface {
+	// Save tokens inside database
+	SaveTokens(token types.Token) error
 
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal("Error while connecting PSQL Database: ", err)
-	}
-
-	// Config
-	err = godotenv.Load()
-	if err != nil {
-		return nil, fmt.Errorf("error while loading .env file: %s", err)
-	}
-
-	return &Database{
-		Db:   db,
-		Sqlx: sqlx.NewDb(db, "postgresql"),
-	}, nil
+	// Close closes the connection to the database
+	Close()
 }
+
+// Context contains the config data that is  used to build a Database instance
+type Context struct {
+	Cfg config.Config
+}
+
+// NewContext allows to build a new Context instance
+func NewContext(cfg config.Config) *Context {
+	return &Context{
+		Cfg: cfg,
+	}
+}
+
+// Builder represents a method that allows to build database
+type Builder func(ctx *Context) (Database, error)
