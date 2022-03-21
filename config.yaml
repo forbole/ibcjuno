@@ -1,0 +1,37 @@
+node:
+    type: remote
+    config:
+        rpc:
+            client_name: ibc-token
+            address: http://localhost:26657
+            max_connections: 20
+        grpc:
+            address: http://localhost:9090
+            insecure: true
+database:
+    name: ibc-token
+    host: localhost
+    port: 5432
+    user: postgres
+    password: password
+    schema: public
+    max_open_connections: 10
+    max_idle_connections: 10
+tokens:
+  token:
+  - name: Atom 
+    units:
+     - denom: uatom
+       exponent: 0
+       ibc_denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2
+     - denom: atom
+       exponent: 6
+       price_id: cosmos
+  - name: Desmos
+    units:
+      - denom: udsm
+        exponent: 0
+        ibc_denom: ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C
+      - denom: dsm
+        exponent: 6
+        price_id: desmos
