@@ -1,13 +1,3 @@
-node:
-    type: remote
-    config:
-        rpc:
-            client_name: ibc-token
-            address: http://localhost:26657
-            max_connections: 20
-        grpc:
-            address: http://localhost:9090
-            insecure: true
 database:
     name: ibc-token
     host: localhost
