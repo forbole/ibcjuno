@@ -1,4 +1,4 @@
-module github.com/MonikaCat/ibc-token
+module github.com/MonikaCat/ibcjuno
 
 go 1.13
 

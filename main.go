@@ -1,7 +1,7 @@
 package main
 
 import (
-	cmd "github.com/MonikaCat/ibc-token/cmd"
+	cmd "github.com/MonikaCat/ibcjuno/cmd"
 )
 
 func main() {

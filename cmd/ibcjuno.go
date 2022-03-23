@@ -7,9 +7,9 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/MonikaCat/ibc-token/config"
-	"github.com/MonikaCat/ibc-token/db"
-	worker "github.com/MonikaCat/ibc-token/worker"
+	"github.com/MonikaCat/ibcjuno/config"
+	"github.com/MonikaCat/ibcjuno/db"
+	worker "github.com/MonikaCat/ibcjuno/worker"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -30,10 +30,10 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "ibcjuno [config-file]",
 	Args:  cobra.ExactArgs(1),
-	Short: "IBCJuno is a IBC tokens price aggregator and exporter",
-	Long: `IBCJuno IBC tokens price aggregator. It queries latest IBC tokens prices and indexes it using PostgreSQL database. IBCJuno is meat to run with a GraphQL layer on top 
-	to ease the ability for developers and downstream clients to query the latest price of any IBC token.`,
-	RunE: ibcJunoCmdHandler,
+	Short: "IBCJuno is a IBC token price aggregator and exporter",
+	Long: `IBCJuno is a IBC token price aggregator. It queries the latest IBC tokens prices and stores it inside PostgreSQL database. 
+IBCJuno is meant to run with a GraphQL layer on top to ease the ability for developers and downstream clients to query the latest price of any IBC token.`,
+	RunE: IBCJunoCmd,
 }
 
 func init() {
@@ -52,7 +52,7 @@ func Execute() {
 	}
 }
 
-func ibcJunoCmdHandler(cmd *cobra.Command, args []string) error {
+func IBCJunoCmd(cmd *cobra.Command, args []string) error {
 	logLvl, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func ibcJunoCmdHandler(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "failed to ping database")
 	}
 
-	workers := make([]worker.Worker, workerCount)
+	workers := make([]worker.Worker, workerCount, workerCount)
 	for i := range workers {
 		workers[i] = worker.NewWorker(db)
 	}

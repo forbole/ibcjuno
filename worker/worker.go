@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/MonikaCat/ibc-token/config"
-	"github.com/MonikaCat/ibc-token/db"
-	"github.com/MonikaCat/ibc-token/utils"
+	"github.com/MonikaCat/ibcjuno/config"
+	"github.com/MonikaCat/ibcjuno/db"
+	"github.com/MonikaCat/ibcjuno/utils"
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
@@ -37,7 +37,7 @@ func (w Worker) process() error {
 	scheduler := gocron.NewScheduler(time.UTC)
 
 	// Fetch the token prices every 2 mins
-	if _, err := scheduler.Every(3).Seconds().Do(func() {
+	if _, err := scheduler.Every(10).Seconds().Do(func() {
 		utils.WatchMethod(w.updatePrice)
 	}); err != nil {
 		return fmt.Errorf("error while setting up period operations: %s", err)

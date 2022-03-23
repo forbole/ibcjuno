@@ -7,18 +7,18 @@ all: ci-lint ci-test install
 # Build / Install
 ###############################################################################
 
-LD_FLAGS = -X github.com/MonikaCat/ibc-token/cmd.Version=$(VERSION) \
- 	-X github.com/MonikaCat/ibc-token/cmd.Commit=$(COMMIT)
+LD_FLAGS = -X github.com/MonikaCat/ibcjuno/cmd.Version=$(VERSION) \
+ 	-X github.com/MonikaCat/ibcjuno/cmd.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 
 build: go.sum
 ifeq ($(OS),Windows_NT)
 	@echo "building ibcjuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibc-token.exe .
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno.exe .
 else
 	@echo "building ibcjuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibc-token .
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno .
 endif
 
 install: go.sum
