@@ -1,1 +1,1 @@
-# ibc-token
+# IBCJuno
