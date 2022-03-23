@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	types "github.com/MonikaCat/ibc-token/token"
+	types "github.com/MonikaCat/ibcjuno/token"
+	"github.com/rs/zerolog/log"
 )
 
 // GetTokensPrices queries the remote APIs to get the token prices of all the tokens having the given ids
@@ -47,12 +48,14 @@ func queryCoinGecko(endpoint string, ptr interface{}) error {
 
 	bz, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("error while reading response body: %s", err)
+		log.Error().Err(err).Msg("error while reading response body: ")
+		return err
 	}
 
 	err = json.Unmarshal(bz, &ptr)
 	if err != nil {
-		return fmt.Errorf("error while unmarshaling response body: %s", err)
+		log.Error().Err(err).Msg("error while unmarshaling response body: ")
+		return err
 	}
 
 	return nil
