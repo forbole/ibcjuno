@@ -18,16 +18,16 @@ func NewToken(name string, units []TokenUnit) Token {
 // TokenUnit represents a unit of a token
 type TokenUnit struct {
 	Denom    string   `yaml:"denom"`
+	IBCDenom string   `yaml:"ibc_denom,omitempty"`
 	Exponent int      `yaml:"exponent"`
-	Aliases  []string `yaml:"aliases,omitempty"`
 	PriceID  string   `yaml:"price_id,omitempty"`
 }
 
-func NewTokenUnit(denom string, exponent int, aliases []string, priceID string) TokenUnit {
+func NewTokenUnit(denom string, ibcDenom string, exponent int, priceID string) TokenUnit {
 	return TokenUnit{
 		Denom:    denom,
+		IBCDenom: ibcDenom,
 		Exponent: exponent,
-		Aliases:  aliases,
 		PriceID:  priceID,
 	}
 }

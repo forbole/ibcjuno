@@ -39,8 +39,8 @@ type Token struct {
 
 type TokenUnit struct {
 	Denom    string   `yaml:"denom"`
+	IBCDenom string   `yaml:"ibc_denom,omitempty"`
 	Exponent int      `yaml:"exponent"`
-	Aliases  []string `yaml:"aliases"`
 	PriceID  string   `yaml:"price_id"`
 }
 

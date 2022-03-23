@@ -51,7 +51,6 @@ func getVersionCmd() *cobra.Command {
 				bz, err := yaml.Marshal(&verInfo)
 				if err != nil {
 					return fmt.Errorf("error when marshaling the version: %s", err)
-
 				}
 				_, err = fmt.Println(string(bz))
 				if err != nil {

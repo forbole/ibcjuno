@@ -3,15 +3,13 @@ package db
 import (
 	"database/sql"
 	"time"
-
-	"github.com/lib/pq"
 )
 
 type TokenUnitRow struct {
 	TokenName string         `db:"token_name"`
 	Denom     string         `db:"denom"`
+	IBCDenom  sql.NullString `db:"ibc_denom"`
 	Exponent  int            `db:"exponent"`
-	Aliases   pq.StringArray `db:"aliases"`
 	PriceID   sql.NullString `db:"price_id"`
 }
 
