@@ -4,12 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/MonikaCat/ibc-token/config"
-	types "github.com/MonikaCat/ibc-token/token"
-	"github.com/MonikaCat/ibc-token/token/coingecko"
-	"github.com/MonikaCat/ibc-token/utils"
+	"github.com/MonikaCat/ibcjuno/config"
+	types "github.com/MonikaCat/ibcjuno/token"
+	"github.com/MonikaCat/ibcjuno/token/coingecko"
+	"github.com/MonikaCat/ibcjuno/utils"
 	"github.com/jmoiron/sqlx"
-	"github.com/lib/pq"
 	_ "github.com/lib/pq" // nolint
 	"github.com/rs/zerolog/log"
 )
@@ -21,8 +20,8 @@ type Database struct {
 	Sqlx *sqlx.DB
 }
 
-// OpenDB opens a database connection with the given database connection info
-// from config. It returns a database connection handle or an error if the
+// OpenDB opens a database connection with the database connection info set inside
+// from config.yaml file. It returns a database connection handle or an error if the
 // connection fails.
 func OpenDB(cfg config.Config) (*Database, error) {
 	sslMode := "disable"
@@ -57,9 +56,10 @@ func OpenDB(cfg config.Config) (*Database, error) {
 	}, nil
 }
 
-// GetTokensPriceID returns the slice of price ids for all tokens stored in db
+// GetTokensPriceID returns the slice of prices id for all tokens stored in db
 func GetTokensPriceID(db *Database) ([]string, error) {
 	var tokens []TokenUnitRow
+	var units []string
 
 	query := `SELECT * FROM token_unit`
 	err := db.Sqlx.Select(&tokens, query)
@@ -67,13 +67,11 @@ func GetTokensPriceID(db *Database) ([]string, error) {
 		return nil, err
 	}
 
-	var units []string
 	for _, unit := range tokens {
 		if unit.PriceID.String != "" {
 			units = append(units, unit.PriceID.String)
 		}
 	}
-	fmt.Printf("\n\nunits: %v", units)
 
 	return units, nil
 }
@@ -86,13 +84,13 @@ func SaveToken(token config.Token, db *Database) error {
 		return err
 	}
 
-	query = `INSERT INTO token_unit (token_name, denom, exponent, aliases, price_id) VALUES `
+	query = `INSERT INTO token_unit (token_name, denom, ibc_denom, exponent, price_id) VALUES `
 	var params []interface{}
 
 	for i, unit := range token.Units {
 		ui := i * 5
 		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4, ui+5)
-		params = append(params, token.Name, unit.Denom, unit.Exponent, pq.StringArray(unit.Aliases),
+		params = append(params, token.Name, unit.Denom, utils.ToNullString(unit.IBCDenom), unit.Exponent,
 			utils.ToNullString(unit.PriceID))
 	}
 
@@ -106,25 +104,25 @@ func SaveToken(token config.Token, db *Database) error {
 	return nil
 }
 
-// getTokenPrices allows to get the most up-to-date token prices
+// getTokenPrices allows to get the latest tokens prices
 func GetTokenPrices(db *Database) ([]types.TokenPrice, error) {
-	// fmt.Println("LOL")
+
 	// Get the list of tokens price id
 	ids, err := GetTokensPriceID(db)
 	if err != nil {
-		return []types.TokenPrice{}, fmt.Errorf("error while getting tokens price id: %s", err)
+		log.Error().Err(err).Msg("error while getting tokens price id:")
+		return []types.TokenPrice{}, err
 	}
-	fmt.Printf("Token prices: \n %s", ids)
 
 	if len(ids) == 0 {
-		log.Debug().Str("module", "pricefeed").Msg("no traded tokens price id found")
-		return []types.TokenPrice{}, nil
+		panic("invalid configuration file: no token price id found inside config.yaml file")
 	}
 
 	// Get the tokens prices
 	prices, err := coingecko.GetTokensPrices(ids)
 	if err != nil {
-		return nil, fmt.Errorf("error while getting tokens prices: %s", err)
+		log.Error().Err(err).Msg("error while getting tokens prices: ")
+		return nil, err
 	}
 
 	return prices, nil
@@ -155,7 +153,8 @@ WHERE token_price.timestamp <= excluded.timestamp`
 
 	_, err := db.Exec(query, param...)
 	if err != nil {
-		return fmt.Errorf("error while saving tokens prices: %s", err)
+		log.Error().Err(err).Msg("error while saving tokens prices: ")
+		return err
 	}
 
 	return nil
