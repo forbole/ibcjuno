@@ -9,7 +9,7 @@ import (
 
 	"github.com/MonikaCat/ibc-token/config"
 	"github.com/MonikaCat/ibc-token/db"
-	"github.com/MonikaCat/ibc-token/processor"
+	worker "github.com/MonikaCat/ibc-token/worker"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -86,9 +86,9 @@ func ibcJunoCmdHandler(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "failed to ping database")
 	}
 
-	workers := make([]processor.Worker, workerCount)
+	workers := make([]worker.Worker, workerCount)
 	for i := range workers {
-		workers[i] = processor.NewWorker(db)
+		workers[i] = worker.NewWorker(db)
 	}
 
 	wg.Add(1)
@@ -102,7 +102,7 @@ func ibcJunoCmdHandler(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		go w.StartIBC()
+		go w.StartIBCJuno()
 	}
 
 	// listen for and trap any OS signal to gracefully shutdown and exit
