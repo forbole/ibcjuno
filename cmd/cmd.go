@@ -18,9 +18,9 @@ var (
 	FlagHome = "home"
 )
 
-// BuildDefaultExecutor allows to build an Executor containing a root command that
+// BuildDefaultCmd allows to build an Executor containing a root command that
 // has the name, description, default version, init and start commands implementations
-func BuildDefaultExecutor(config *Config) cli.Executor {
+func BuildDefaultCmd(config *Config) cli.Executor {
 	rootCmd := RootCmd(config.GetName())
 
 	rootCmd.AddCommand(

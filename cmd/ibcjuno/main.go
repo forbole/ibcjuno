@@ -12,7 +12,7 @@ func main() {
 	config := cmd.NewConfig("ibcjuno").WithStartConfig(types.NewConfig())
 
 	// Run the commands and panic if there is any error
-	exec := cmd.BuildDefaultExecutor(config)
+	exec := cmd.BuildDefaultCmd(config)
 	err := exec.Execute()
 	if err != nil {
 		os.Exit(1)
