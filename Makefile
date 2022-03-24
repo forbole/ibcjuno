@@ -15,15 +15,15 @@ BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 build: go.sum
 ifeq ($(OS),Windows_NT)
 	@echo "building ibcjuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno.exe .
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno.exe  ./cmd/ibcjuno
 else
 	@echo "building ibcjuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno .
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno ./cmd/ibcjuno
 endif
 
 install: go.sum
 	@echo "installing ibcjuno binary..."
-	@go install -mod=readonly $(BUILD_FLAGS) .
+	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/ibcjuno
 
 ###############################################################################
 # Tests / CI
