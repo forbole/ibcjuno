@@ -2,6 +2,10 @@ package types
 
 import "time"
 
+type TokensConfig struct {
+	Tokens []Token `yaml:"token"`
+}
+
 // Token represents valid token
 type Token struct {
 	Name  string      `yaml:"name"`
@@ -17,10 +21,10 @@ func NewToken(name string, units []TokenUnit) Token {
 
 // TokenUnit represents a unit of a token
 type TokenUnit struct {
-	Denom    string   `yaml:"denom"`
-	IBCDenom string   `yaml:"ibc_denom,omitempty"`
-	Exponent int      `yaml:"exponent"`
-	PriceID  string   `yaml:"price_id,omitempty"`
+	Denom    string `yaml:"denom"`
+	IBCDenom string `yaml:"ibc_denom,omitempty"`
+	Exponent int    `yaml:"exponent"`
+	PriceID  string `yaml:"price_id,omitempty"`
 }
 
 func NewTokenUnit(denom string, ibcDenom string, exponent int, priceID string) TokenUnit {
@@ -40,7 +44,7 @@ type TokenPrice struct {
 	Timestamp time.Time
 }
 
-// NewTokenPrice returns new TokenPrice instance
+// NewTokenPrice returns TokenPrice instance
 func NewTokenPrice(unitName string, price float64, marketCap int64, timestamp time.Time) TokenPrice {
 	return TokenPrice{
 		UnitName:  unitName,
@@ -48,4 +52,18 @@ func NewTokenPrice(unitName string, price float64, marketCap int64, timestamp ti
 		MarketCap: marketCap,
 		Timestamp: timestamp,
 	}
+}
+
+func NewTokensConfig(
+	tokens []Token,
+) TokensConfig {
+	return TokensConfig{
+		Tokens: tokens,
+	}
+}
+
+// DefaultTokensConfig returns default TokensConfig instance
+func DefaultTokensConfig() TokensConfig {
+	var testToken []Token
+	return NewTokensConfig(testToken)
 }

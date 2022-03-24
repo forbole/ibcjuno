@@ -12,8 +12,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// GetTokensPrices queries the remote APIs to get the token prices of all the tokens having the given ids
-func GetTokensPrices(ids []string) ([]types.TokenPrice, error) {
+// GetLatestTokensPrices queries the remote APIs to get the latest prices 
+// of the tokens defined in config file
+func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
 	var prices []MarketTicker
 	query := fmt.Sprintf("/coins/markets?vs_currency=usd&ids=%s", strings.Join(ids, ","))
 	err := queryCoinGecko(query, &prices)
