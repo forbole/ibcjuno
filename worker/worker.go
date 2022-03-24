@@ -4,22 +4,20 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/MonikaCat/ibcjuno/config"
-	"github.com/MonikaCat/ibcjuno/db"
+	postgresql "github.com/MonikaCat/ibcjuno/db"
+
 	"github.com/MonikaCat/ibcjuno/utils"
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 )
 
-type (
-	Worker struct {
-		db *db.Database
-	}
-)
+type Worker struct {
+	db postgresql.Database
+}
 
-func NewWorker(db *db.Database) Worker {
-	return Worker{db}
+func NewWorker(ctx *Context) Worker {
+	return Worker{db: ctx.Database}
 }
 
 func (w Worker) StartIBCJuno() {
@@ -48,15 +46,15 @@ func (w Worker) process() error {
 }
 
 func (w Worker) updatePrice() error {
-
+	log.Info().Msg("updating prices...")
 	// Get latest tokens prices
-	prices, err := db.GetTokenPrices(w.db)
+	prices, err := w.db.GetTokenPrices()
 	if err != nil {
 		return err
 	}
 
 	// Save the token prices
-	err = db.SaveTokensPrices(prices, w.db)
+	err = w.db.SaveTokensPrices(prices)
 	if err != nil {
 		return fmt.Errorf("error while saving token prices: %s", err)
 	}
@@ -65,10 +63,10 @@ func (w Worker) updatePrice() error {
 }
 
 // StoreTokensDetails saves tokens defined inside config.yaml file into database
-func (w *Worker) StoreTokensDetails(cfg config.Config) error {
+func (w *Worker) StoreTokensDetails(cfg utils.Config) error {
 	for _, coin := range cfg.Tokens.Tokens {
 		// Save the coin as a token with its units
-		err := db.SaveToken(coin, w.db)
+		err := w.db.SaveToken(coin)
 		if err != nil {
 			return fmt.Errorf("error while saving token: %s", err)
 		}
