@@ -10,14 +10,14 @@ import (
 )
 
 // ReadConfigPreRunE represents a Cobra cmd function allowing to read the config before executing the command itself
-func ReadConfigPreRunE(cfg *Config) utils.CobraCmdFunc {
+func ReadConfigPreRunE(cfg *StartConfig) utils.CobraCmdFunc {
 	return func(_ *cobra.Command, _ []string) error {
 		return UpdateGlobalConfig(cfg)
 	}
 }
 
 // ReadConfig allows to read the configuration using the provided config
-func ReadConfig(cfg *Config) (utils.Config, error) {
+func ReadConfig(cfg *StartConfig) (utils.Config, error) {
 	file := utils.GetConfigFilePath()
 
 	// Ensure the path and config file exists
@@ -31,7 +31,7 @@ func ReadConfig(cfg *Config) (utils.Config, error) {
 
 // UpdateGlobalConfig parses the configuration file
 // and sets it as global configuration
-func UpdateGlobalConfig(cfg *Config) error {
+func UpdateGlobalConfig(cfg *StartConfig) error {
 	junoCfg, err := ReadConfig(cfg)
 	if err != nil {
 		return err

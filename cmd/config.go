@@ -5,43 +5,43 @@ import (
 	startcmd "github.com/MonikaCat/ibcjuno/cmd/start/types"
 )
 
-// Config represents configuration for "init" and "start" commands
-type Config struct {
+// CmdConfig represents configuration for "init" and "start" commands
+type CmdConfig struct {
 	name        string
-	initConfig  *initcmd.Config
-	startConfig *startcmd.Config
+	initConfig  *initcmd.InitConfig
+	startConfig *startcmd.StartConfig
 }
 
-// NewConfig allows to build a new Config instance
-func NewConfig(name string) *Config {
-	return &Config{
+// NewCmdConfig allows to build a new CmdConfig instance
+func NewCmdConfig(name string) *CmdConfig {
+	return &CmdConfig{
 		name: name,
 	}
 }
 
 // GetName returns the name of the root command
-func (c *Config) GetName() string {
+func (c *CmdConfig) GetName() string {
 	return c.name
 }
 
 // GetInitConfig returns the config used during init command
-func (c *Config) GetInitConfig() *initcmd.Config {
+func (c *CmdConfig) GetInitConfig() *initcmd.InitConfig {
 	if c.initConfig == nil {
-		return initcmd.NewConfig()
+		return initcmd.NewInitConfig()
 	}
 	return c.initConfig
 }
 
 // StartConfig sets cfg as the start command configuration
-func (c *Config) StartConfig(cfg *startcmd.Config) *Config {
+func (c *CmdConfig) StartConfig(cfg *startcmd.StartConfig) *CmdConfig {
 	c.startConfig = cfg
 	return c
 }
 
 // GetStartConfig returns the config used during start command
-func (c *Config) GetStartConfig() *startcmd.Config {
+func (c *CmdConfig) GetStartConfig() *startcmd.StartConfig {
 	if c.startConfig == nil {
-		return startcmd.NewConfig()
+		return startcmd.NewStartConfig()
 	}
 	return c.startConfig
 }

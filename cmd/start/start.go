@@ -19,7 +19,7 @@ var (
 )
 
 // NewStartCmd returns the command that is run when starting IBCJuno
-func NewStartCmd(cmdCfg *types.Config) *cobra.Command {
+func NewStartCmd(cmdCfg *types.StartConfig) *cobra.Command {
 	return &cobra.Command{
 		Use:     "start",
 		Short:   "Start IBCJuno price aggregator",

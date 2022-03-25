@@ -8,7 +8,7 @@ import (
 )
 
 // GetStartContext sets up database context
-func GetStartContext(cfg utils.Config, parseConfig *Config) (*worker.Context, error) {
+func GetStartContext(cfg utils.Config, parseConfig *StartConfig) (*worker.Context, error) {
 
 	// Create new database context
 	databaseCtx := database.NewContext(cfg.Database)

@@ -20,7 +20,7 @@ var (
 
 // BuildDefaultCmd allows to build cli Executor containing a root command that
 // has name, description, version, init and start commands implementations
-func BuildDefaultCmd(config *Config) cli.Executor {
+func BuildDefaultCmd(config *CmdConfig) cli.Executor {
 	rootCmd := RootCmd(config.GetName())
 
 	rootCmd.AddCommand(

@@ -14,7 +14,7 @@ const (
 )
 
 // NewInitCmd returns the command that should be run to properly initialize IBCJuno config files
-func NewInitCmd(cfg *Config) *cobra.Command {
+func NewInitCmd(cfg *InitConfig) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialize configuration files",

@@ -6,19 +6,19 @@ import (
 	utils "github.com/MonikaCat/ibcjuno/utils"
 )
 
-// Config contains all the configuration for "start" command
-type Config struct {
-	configParser utils.Parser
+// StartConfig contains all the configuration for "start" command
+type StartConfig struct {
+	configParser utils.ConfigParser
 	buildDb      database.Builder
 }
 
-// NewConfig allows to build new Config instance
-func NewConfig() *Config {
-	return &Config{}
+// NewStartConfig allows to build new StartConfig instance
+func NewStartConfig() *StartConfig {
+	return &StartConfig{}
 }
 
 // GetConfigParser returns the configuration parser
-func (cfg *Config) GetConfigParser() utils.Parser {
+func (cfg *StartConfig) GetConfigParser() utils.ConfigParser {
 	if cfg.configParser == nil {
 		return utils.DefaultConfigParser
 	}
@@ -26,7 +26,7 @@ func (cfg *Config) GetConfigParser() utils.Parser {
 }
 
 // GetDBBuilder returns the database builder
-func (cfg *Config) GetDBBuilder() database.Builder {
+func (cfg *StartConfig) GetDBBuilder() database.Builder {
 	if cfg.buildDb == nil {
 		return builder.Builder
 	}
