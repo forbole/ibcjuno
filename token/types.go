@@ -37,8 +37,12 @@ func NewTokensConfig(tokens []Token) TokensConfig {
 
 // DefaultTokensConfig returns default TokensConfig instance
 func DefaultTokensConfig() TokensConfig {
-	var testToken []Token
-	return NewTokensConfig(testToken)
+	var tokenUnit []TokenUnit
+	var defaulToken []Token
+	tokenUnit = append(tokenUnit, NewTokenUnit("dsm",
+		"ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C", 6, "desmos"))
+	defaulToken = append(defaulToken, NewToken("Desmos", tokenUnit))
+	return NewTokensConfig(defaulToken)
 }
 
 // NewToken creates new Token instance
