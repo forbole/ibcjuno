@@ -10,14 +10,13 @@ import (
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
-	
 )
 
 type Worker struct {
 	db postgresql.Database
 }
 
-func NewWorker(ctx *Context) Worker {
+func NewWorker(ctx *WorkerContext) Worker {
 	return Worker{db: ctx.Database}
 }
 

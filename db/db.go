@@ -27,17 +27,17 @@ type Database interface {
 	Close()
 }
 
-// Context contains the data used to build a Database instance
-type Context struct {
+// DatabaseContext contains the data used to build a Database instance
+type DatabaseContext struct {
 	Cfg utils.DatabaseConfig
 }
 
-// NewContext allows to build a new Context instance
-func NewContext(cfg utils.DatabaseConfig) *Context {
-	return &Context{
+// NewDatabaseContext allows to build new DatabaseContext instance
+func NewDatabaseContext(cfg utils.DatabaseConfig) *DatabaseContext {
+	return &DatabaseContext{
 		Cfg: cfg,
 	}
 }
 
-// Builder represents a method that allows to build database
-type Builder func(ctx *Context) (Database, error)
+// DatabaseBuilder represents a method that allows to build database
+type DatabaseBuilder func(ctx *DatabaseContext) (Database, error)

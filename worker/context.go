@@ -2,19 +2,18 @@ package worker
 
 import (
 	database "github.com/MonikaCat/ibcjuno/db"
-	
 )
 
-// Context represents the context that is shared among different workers
-type Context struct {
+// WorkerContext represents the context that is shared with worker
+type WorkerContext struct {
 	Database database.Database
 }
 
-// NewContext builds a new Context instance
-func NewContext(
+// NewWorkerContext builds new WorkerContext instance
+func NewWorkerContext(
 	db database.Database,
-) *Context {
-	return &Context{
+) *WorkerContext {
+	return &WorkerContext{
 		Database: db,
 	}
 }

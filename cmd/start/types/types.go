@@ -9,7 +9,7 @@ import (
 // StartConfig contains all the configuration for "start" command
 type StartConfig struct {
 	configParser utils.ConfigParser
-	buildDb      database.Builder
+	buildDb      database.DatabaseBuilder
 }
 
 // NewStartConfig allows to build new StartConfig instance
@@ -26,9 +26,9 @@ func (cfg *StartConfig) GetConfigParser() utils.ConfigParser {
 }
 
 // GetDBBuilder returns the database builder
-func (cfg *StartConfig) GetDBBuilder() database.Builder {
+func (cfg *StartConfig) GetDatabaseBuilder() database.DatabaseBuilder {
 	if cfg.buildDb == nil {
-		return builder.Builder
+		return builder.DatabaseBuilder
 	}
 	return cfg.buildDb
 }

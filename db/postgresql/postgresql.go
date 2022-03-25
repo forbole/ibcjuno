@@ -21,10 +21,10 @@ type Database struct {
 	Sqlx *sqlx.DB
 }
 
-// OpenDB opens a database connection with the database connection info set inside
-// from config.yaml file. It returns a database connection handle or an error if the
-// connection fails.
-func OpenDB(ctx *database.Context) (database.Database, error) {
+// ConnectDatabase creates database connection with info set inside
+// from config.yaml file. It returns a database connection handle
+// or an error if the connection fails.
+func ConnectDatabase(ctx *database.DatabaseContext) (database.Database, error) {
 	sslMode := "disable"
 	if ctx.Cfg.SSLMode != "" {
 		sslMode = ctx.Cfg.SSLMode
