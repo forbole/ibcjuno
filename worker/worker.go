@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
+	
 )
 
 type Worker struct {
@@ -20,9 +21,9 @@ func NewWorker(ctx *Context) Worker {
 	return Worker{db: ctx.Database}
 }
 
-func (w Worker) StartIBCJuno() {
+func (w Worker) StartWorker() {
 
-	if err := w.process(); err != nil {
+	if err := w.startFetchingPrices(); err != nil {
 		go func() {
 			log.Info().Msg("error when starting processig token prices")
 		}()
@@ -31,7 +32,7 @@ func (w Worker) StartIBCJuno() {
 }
 
 // process starts the cron job to fetch and store tokens prices every 2 mins
-func (w Worker) process() error {
+func (w Worker) startFetchingPrices() error {
 	scheduler := gocron.NewScheduler(time.UTC)
 
 	// Fetch the token prices every 2 mins
