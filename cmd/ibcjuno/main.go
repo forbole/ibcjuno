@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/MonikaCat/ibcjuno/cmd"
-	types "github.com/MonikaCat/ibcjuno/cmd/start/types"
+	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
 )
 
 func main() {

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	initcmd "github.com/MonikaCat/ibcjuno/cmd/init"
-	startcmd "github.com/MonikaCat/ibcjuno/cmd/start/types"
+	startcmd "github.com/MonikaCat/ibcjuno/cmd/start/config"
 )
 
 // CmdConfig represents configuration for "init" and "start" commands

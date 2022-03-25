@@ -10,7 +10,7 @@ import (
 	workerctx "github.com/MonikaCat/ibcjuno/worker"
 	"github.com/rs/zerolog/log"
 
-	types "github.com/MonikaCat/ibcjuno/cmd/start/types"
+	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
 	"github.com/spf13/cobra"
 )
 

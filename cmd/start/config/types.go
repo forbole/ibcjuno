@@ -1,4 +1,4 @@
-package types
+package config
 
 import (
 	database "github.com/MonikaCat/ibcjuno/db"
