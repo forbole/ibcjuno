@@ -18,7 +18,7 @@ var (
 	waitGroup sync.WaitGroup
 )
 
-// NewStartCmd returns the command that should be run when starting IBCJuno
+// NewStartCmd returns the command that is run when starting IBCJuno
 func NewStartCmd(cmdCfg *types.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:     "start",
@@ -30,15 +30,14 @@ func NewStartCmd(cmdCfg *types.Config) *cobra.Command {
 				return err
 			}
 
-			return StartFetchingPrices(context)
+			return StartIBCJuno(context)
 		},
 	}
 }
 
-// StartFetchingPrices represents the function that is called when
+// StartIBCJuno represents the function that is called when
 // start command is executed
-func StartFetchingPrices(ctx *workerctx.Context) error {
-	log.Info().Msg("starting worker...")
+func StartIBCJuno(ctx *workerctx.Context) error {
 
 	// Create worker responsible for fetching latest prices
 	worker := workerctx.NewWorker((ctx))
@@ -53,8 +52,9 @@ func StartFetchingPrices(ctx *workerctx.Context) error {
 		return err
 	}
 
-	// Start IBCJuno
-	go worker.StartIBCJuno()
+	// Start worker
+	log.Info().Msg("starting worker...")
+	go worker.StartWorker()
 
 	// listen for and trap any OS signal to gracefully shutdown and exit
 	trapSignal(ctx)
@@ -65,7 +65,7 @@ func StartFetchingPrices(ctx *workerctx.Context) error {
 }
 
 // trapSignal will listen for any OS signal and invoke Close on Database
-// and Done on the main WaitGroup allowing the main process to gracefully exit.
+// and Done on the main WaitGroup allowing the main process to exit gracefully.
 func trapSignal(ctx *workerctx.Context) {
 	var sigCh = make(chan os.Signal)
 

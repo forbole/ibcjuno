@@ -20,7 +20,7 @@ func ReadConfigPreRunE(cfg *Config) utils.CobraCmdFunc {
 func ReadConfig(cfg *Config) (utils.Config, error) {
 	file := utils.GetConfigFilePath()
 
-	// Ensure the path exists
+	// Ensure the path and config file exists
 	if _, err := os.Stat(file); os.IsNotExist(err) {
 		return utils.Config{}, fmt.Errorf("config file does not exist. Make sure you have run the init command")
 	}
