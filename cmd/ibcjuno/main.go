@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// IBCJuno config runner
-	config := cmd.NewConfig("ibcjuno").WithStartConfig(types.NewConfig())
+	config := cmd.NewConfig("IBCJuno").StartConfig(types.NewConfig())
 
 	// Run the commands and panic if there is any error
 	exec := cmd.BuildDefaultCmd(config)

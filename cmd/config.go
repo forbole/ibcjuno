@@ -5,7 +5,7 @@ import (
 	startcmd "github.com/MonikaCat/ibcjuno/cmd/start/types"
 )
 
-// Config represents the general configuration for the commands
+// Config represents configuration for "init" and "start" commands
 type Config struct {
 	name        string
 	initConfig  *initcmd.Config
@@ -32,8 +32,8 @@ func (c *Config) GetInitConfig() *initcmd.Config {
 	return c.initConfig
 }
 
-// WithStartConfig sets cfg as the start command configuration
-func (c *Config) WithStartConfig(cfg *startcmd.Config) *Config {
+// StartConfig sets cfg as the start command configuration
+func (c *Config) StartConfig(cfg *startcmd.Config) *Config {
 	c.startConfig = cfg
 	return c
 }

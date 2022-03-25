@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	flagReplace = "replace"
+	replaceFlag = "replace"
 )
 
 // NewInitCmd returns the command that should be run to properly initialize IBCJuno config files
@@ -19,14 +19,14 @@ func NewInitCmd(cfg *Config) *cobra.Command {
 		Use:   "init",
 		Short: "Initialize configuration files",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Create the config path if not present
+			// Create the config path if doesn't exist
 			if _, err := os.Stat(config.HomePath); os.IsNotExist(err) {
 				err = os.MkdirAll(config.HomePath, os.ModePerm)
 				if err != nil {
 					return err
 				}
 			}
-			replace, err := cmd.Flags().GetBool(flagReplace)
+			replace, err := cmd.Flags().GetBool(replaceFlag)
 			if err != nil {
 				return err
 			}
@@ -39,8 +39,8 @@ func NewInitCmd(cfg *Config) *cobra.Command {
 			// Replace the file if --replace flag is used
 			if file != nil && !replace {
 				return fmt.Errorf(
-					"configuration file already present at %s. If you wish to overwrite it, use the --%s flag",
-					configFilePath, flagReplace)
+					"configuration file already exists at %s. If you wish to overwrite it, use the --%s flag",
+					configFilePath, replaceFlag)
 			}
 			// Get the config from the flags
 			yamlCfg := cfg.GetConfigCreator()(cmd)
@@ -49,7 +49,7 @@ func NewInitCmd(cfg *Config) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(flagReplace, false, "overrides any existing configuration")
+	cmd.Flags().Bool(replaceFlag, false, "overrides any existing configuration file")
 
 	return cmd
 }

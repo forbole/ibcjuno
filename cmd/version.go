@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	flagFormat = "format"
+	formatFlag = "format"
 )
 
 var (
@@ -62,7 +62,7 @@ func getVersionCmd() *cobra.Command {
 		},
 	}
 
-	versionCmd.Flags().StringVar(&versionFormat, flagFormat, "text", "Print the version in the given format (text | json)")
+	versionCmd.Flags().StringVar(&versionFormat, formatFlag, "text", "Print the version in the given format (text | json)")
 
 	return versionCmd
 }
