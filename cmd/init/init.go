@@ -17,7 +17,7 @@ const (
 func NewInitCmd(cfg *Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
-		Short: "Initializes the configuration files",
+		Short: "Initialize configuration files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Create the config path if not present
 			if _, err := os.Stat(config.HomePath); os.IsNotExist(err) {
