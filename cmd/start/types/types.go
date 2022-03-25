@@ -25,7 +25,7 @@ func (cfg *StartConfig) GetConfigParser() utils.ConfigParser {
 	return cfg.configParser
 }
 
-// GetDBBuilder returns the database builder
+// GetDatabaseBuilder returns the database builder
 func (cfg *StartConfig) GetDatabaseBuilder() database.DatabaseBuilder {
 	if cfg.buildDb == nil {
 		return builder.DatabaseBuilder

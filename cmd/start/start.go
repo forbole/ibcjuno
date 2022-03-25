@@ -36,23 +36,23 @@ func NewStartCmd(cmdCfg *types.StartConfig) *cobra.Command {
 }
 
 // StartIBCJuno represents the function that is called when
-// start command is executed
+// "start" command is executed
 func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 
-	// Create worker responsible for fetching latest prices
+	// create worker responsible for fetching latest prices
 	worker := workerctx.NewWorker((ctx))
 	waitGroup.Add(1)
 
-	// Get the config
+	// get the config
 	cfg := utils.Cfg
 
-	// Store tokens defined in config file inside the database
+	// store tokens defined in config file inside the database
 	err := worker.StoreTokensDetails(cfg)
 	if err != nil {
 		return err
 	}
 
-	// Start worker
+	// start worker
 	log.Info().Msg("starting worker...")
 	go worker.StartWorker()
 

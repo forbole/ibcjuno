@@ -11,7 +11,7 @@ type Database interface {
 	// Returns error if operation fails
 	GetTokensPriceID() ([]string, error)
 
-	// Store the latest tokens price in database
+	// Store latest tokens price in database
 	// Returns error if operation fails
 	SaveTokensPrices(prices []types.TokenPrice) error
 
@@ -19,7 +19,7 @@ type Database interface {
 	// Returns error if operation fails
 	GetTokenPrices() ([]types.TokenPrice, error)
 
-	// SaveToken stores the given token details inside database
+	// Store given token details inside database
 	// Returns error if operation fails
 	SaveToken(token types.Token) error
 

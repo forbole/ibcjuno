@@ -10,7 +10,7 @@ type MarketTicker struct {
 	LastUpdated  time.Time `json:"last_updated"`
 }
 
-// MarketTickers is an array of MarketTicker
+// MarketTickers represents an array of MarketTicker
 type MarketTickers []MarketTicker
 
 // Token contains the information of a single token

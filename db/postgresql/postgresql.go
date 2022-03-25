@@ -21,9 +21,9 @@ type Database struct {
 	Sqlx *sqlx.DB
 }
 
-// ConnectDatabase creates database connection with info set inside
-// from config.yaml file. It returns a database connection handle
-// or an error if the connection fails.
+// ConnectDatabase creates database connection with configuration set inside
+// config.yaml file. It returns a database connection handle or an error
+// if the connection fails.
 func ConnectDatabase(ctx *database.DatabaseContext) (database.Database, error) {
 	sslMode := "disable"
 	if ctx.Cfg.SSLMode != "" {
@@ -49,7 +49,7 @@ func ConnectDatabase(ctx *database.DatabaseContext) (database.Database, error) {
 		return nil, err
 	}
 
-	// Set max open connections
+	// set max open connections
 	postgresDb.SetMaxOpenConns(ctx.Cfg.MaxOpenConnections)
 	postgresDb.SetMaxIdleConns(ctx.Cfg.MaxIdleConnections)
 
@@ -109,7 +109,7 @@ func (db *Database) SaveToken(token types.Token) error {
 
 // GetTokenPrices allows to query the latest tokens prices from coingecko
 func (db *Database) GetTokenPrices() ([]types.TokenPrice, error) {
-	// Get the list of tokens price id
+	// get the list of tokens price id
 	ids, err := db.GetTokensPriceID()
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting tokens price id:")
@@ -120,7 +120,7 @@ func (db *Database) GetTokenPrices() ([]types.TokenPrice, error) {
 		panic("invalid configuration file: no token price id found inside config.yaml file")
 	}
 
-	// Get the tokens prices
+	// get the tokens prices
 	prices, err := coingecko.GetLatestTokensPrices(ids)
 	if err != nil {
 		log.Error().Err(err).Msg("error while getting tokens prices: ")

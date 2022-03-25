@@ -32,7 +32,7 @@ func BuildDefaultCmd(config *CmdConfig) cli.Executor {
 	return PrepareRootCmd(config.GetName(), rootCmd)
 }
 
-// RootCmd allows to build the default root command having the given name
+// RootCmd allows to build the default root command with the given name
 func RootCmd(name string) *cobra.Command {
 	return &cobra.Command{
 		Use:   name,

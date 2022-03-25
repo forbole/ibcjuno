@@ -29,7 +29,7 @@ type TokenPriceRow struct {
 	Timestamp time.Time `db:"timestamp"`
 }
 
-// NewTokenPriceRow allows to create NewTokenPriceRow
+// NewTokenPriceRow allows to create new TokenPriceRow
 func NewTokenPriceRow(name string, currentPrice float64, marketCap int64, timestamp time.Time) TokenPriceRow {
 	return TokenPriceRow{
 		Name:      name,

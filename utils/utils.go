@@ -25,6 +25,7 @@ func WatchMethod(method func() error) {
 	}()
 }
 
+// ToNullString converts to empty string
 func ToNullString(value string) sql.NullString {
 	value = strings.TrimSpace(value)
 	return sql.NullString{

@@ -30,13 +30,13 @@ func (w Worker) StartWorker() {
 
 }
 
-// process starts the cron job to fetch and store tokens prices every 2 mins
+// startFetchingPrices starts the cron job to fetch and store tokens prices every 2 mins
 func (w Worker) startFetchingPrices() error {
 	scheduler := gocron.NewScheduler(time.UTC)
 
 	// Fetch the token prices every 2 mins
-	if _, err := scheduler.Every(10).Seconds().Do(func() {
-		utils.WatchMethod(w.updatePrice)
+	if _, err := scheduler.Every(2).Minutes().Do(func() {
+		utils.WatchMethod(w.updatePrices)
 	}); err != nil {
 		return fmt.Errorf("error while setting up period operations: %s", err)
 	}
@@ -45,12 +45,13 @@ func (w Worker) startFetchingPrices() error {
 	return nil
 }
 
-func (w Worker) updatePrice() error {
+func (w Worker) updatePrices() error {
 	log.Info().Msg("updating prices...")
+
 	// Get latest tokens prices
 	prices, err := w.db.GetTokenPrices()
 	if err != nil {
-		return err
+		return fmt.Errorf("error while getting token prices: %s", err)
 	}
 
 	// Save the token prices
