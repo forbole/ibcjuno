@@ -14,13 +14,13 @@ var (
 type Config struct {
 	bytes []byte
 
-	Database databaseconfig.Config     `yaml:"database"`
-	Tokens   tokensconfig.TokensConfig `yaml:"tokens"`
+	Database databaseconfig.DatabaseConfig `yaml:"database"`
+	Tokens   tokensconfig.TokensConfig     `yaml:"tokens"`
 }
 
-// NewConfig builds a new Config instance
+// NewConfig builds new Config instance
 func NewConfig(
-	dbConfig databaseconfig.Config,
+	dbConfig databaseconfig.DatabaseConfig,
 	tokensConfig tokensconfig.TokensConfig,
 ) Config {
 	return Config{
@@ -29,6 +29,7 @@ func NewConfig(
 	}
 }
 
+// DefaultConfig returns default Config instance
 func DefaultConfig() Config {
 	return NewConfig(
 		databaseconfig.DefaultDatabaseConfig(),
@@ -36,6 +37,7 @@ func DefaultConfig() Config {
 	)
 }
 
+// GetBytes returns slice of byte
 func (c Config) GetBytes() []byte {
 	return c.bytes
 }

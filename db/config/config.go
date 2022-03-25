@@ -1,6 +1,6 @@
 package config
 
-type Config struct {
+type DatabaseConfig struct {
 	Name               string `yaml:"name"`
 	Host               string `yaml:"host"`
 	Port               int64  `yaml:"port"`
@@ -12,12 +12,13 @@ type Config struct {
 	MaxIdleConnections int    `yaml:"max_idle_connections"`
 }
 
+// NewDatabaseConfig creates new DatabaseConfig instance
 func NewDatabaseConfig(
 	name, host string, port int64, user string, password string,
 	sslMode string, schema string,
 	maxOpenConnections int, maxIdleConnections int,
-) Config {
-	return Config{
+) DatabaseConfig {
+	return DatabaseConfig{
 		Name:               name,
 		Host:               host,
 		Port:               port,
@@ -30,8 +31,8 @@ func NewDatabaseConfig(
 	}
 }
 
-// DefaultDatabaseConfig returns the default instance of Config
-func DefaultDatabaseConfig() Config {
+// DefaultDatabaseConfig returns the default instance of DatabaseConfig
+func DefaultDatabaseConfig() DatabaseConfig {
 	return NewDatabaseConfig(
 		"database-name",
 		"localhost",

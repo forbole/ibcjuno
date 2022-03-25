@@ -29,11 +29,11 @@ type Database interface {
 
 // Context contains the data used to build a Database instance
 type Context struct {
-	Cfg utils.Config
+	Cfg utils.DatabaseConfig
 }
 
 // NewContext allows to build a new Context instance
-func NewContext(cfg utils.Config) *Context {
+func NewContext(cfg utils.DatabaseConfig) *Context {
 	return &Context{
 		Cfg: cfg,
 	}
