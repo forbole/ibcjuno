@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	"github.com/MonikaCat/ibcjuno/utils"
-	worker "github.com/MonikaCat/ibcjuno/worker"
+	workerctx "github.com/MonikaCat/ibcjuno/worker"
 	"github.com/rs/zerolog/log"
 
 	types "github.com/MonikaCat/ibcjuno/cmd/start/types"
@@ -18,7 +18,7 @@ var (
 	waitGroup sync.WaitGroup
 )
 
-// NewStartCmd returns the command that should be run when we want to start parsing a chain state.
+// NewStartCmd returns the command that should be run when starting IBCJuno
 func NewStartCmd(cmdCfg *types.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:     "start",
@@ -30,34 +30,31 @@ func NewStartCmd(cmdCfg *types.Config) *cobra.Command {
 				return err
 			}
 
-			return StartParsing(context)
+			return StartFetchingPrices(context)
 		},
 	}
 }
 
-// StartParsing represents the function that should be called when the parse command is executed
-func StartParsing(ctx *worker.Context) error {
+// StartFetchingPrices represents the function that is called when
+// start command is executed
+func StartFetchingPrices(ctx *workerctx.Context) error {
+	log.Info().Msg("starting worker...")
 
-	cfg := utils.Cfg
-	workerCount := 1
-	workers := make([]worker.Worker, workerCount, workerCount)
-	for i := range workers {
-		workers[i] = worker.NewWorker(ctx)
-	}
-
+	// Create worker responsible for fetching latest prices
+	worker := workerctx.NewWorker((ctx))
 	waitGroup.Add(1)
 
-	// Start each blocking worker in a go-routine where the worker consumes jobs
-	// off of the export queue.
-	for i, w := range workers {
-		log.Info().Int("number", i+1).Msg("starting worker...")
-		err := w.StoreTokensDetails(cfg)
-		if err != nil {
-			return err
-		}
+	// Get the config
+	cfg := utils.Cfg
 
-		go w.StartIBCJuno()
+	// Store tokens defined in config file inside the database
+	err := worker.StoreTokensDetails(cfg)
+	if err != nil {
+		return err
 	}
+
+	// Start IBCJuno
+	go worker.StartIBCJuno()
 
 	// listen for and trap any OS signal to gracefully shutdown and exit
 	trapSignal(ctx)
@@ -67,9 +64,9 @@ func StartParsing(ctx *worker.Context) error {
 	return nil
 }
 
-// trapSignal will listen for any OS signal and invoke Done on the main
-// WaitGroup allowing the main process to gracefully exit.
-func trapSignal(ctx *worker.Context) {
+// trapSignal will listen for any OS signal and invoke Close on Database
+// and Done on the main WaitGroup allowing the main process to gracefully exit.
+func trapSignal(ctx *workerctx.Context) {
 	var sigCh = make(chan os.Signal)
 
 	signal.Notify(sigCh, syscall.SIGTERM)
