@@ -40,7 +40,7 @@ func NewStartCmd(cmdCfg *types.StartConfig) *cobra.Command {
 func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 
 	// create worker responsible for fetching latest prices
-	worker := workerctx.NewWorker((ctx))
+	worker := workerctx.NewWorker(ctx)
 	waitGroup.Add(1)
 
 	// get the config
