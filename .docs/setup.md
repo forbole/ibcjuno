@@ -2,9 +2,9 @@
 Setting up IBCJuno is pretty straightforward. It requires three things to be done:
 1. Install IBCJuno.
 1. Initialize the configuration.
-2. Start the parser.
+2. Start IBCJuno.
 
-## Installing Juno
+## Installing IBCJuno
 In order to install IBCJuno you are required to have [Go 1.17+](https://golang.org/dl/) installed on your machine. Once you have it, the first thing to do is to clone the GitHub repository. To do this you can run
 
 ```shell
@@ -83,7 +83,7 @@ We highly suggest you running IBCJuno as a system service so that it can be rest
 ```shell
 $ sudo tee /etc/systemd/system/ibcjuno.service > /dev/null <<EOF
 [Unit]
-Description=IBCJuno aggregator
+Description=IBCJuno Price Aggregator
 After=network-online.target
 
 [Service]
