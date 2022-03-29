@@ -35,14 +35,7 @@ tokens:
             - denom: atom
               exponent: 6
               price_id: cosmos
-        - name: Osmosis
-          units:
-            - denom: uosmo
-              exponent: 0
-              ibc_denom: uosmo
-            - denom: osmo
-              exponent: 6
-              price_id: osmosis
+
 ```
 
 </details>
@@ -66,3 +59,28 @@ This section contains all different configuration related to the PostgreSQL data
 | `ssl_mode` | `string` | [PostgreSQL SSL mode](https://www.postgresql.org/docs/9.1/libpq-ssl.html) to be used when connecting to the database. If not set, `disable` will be used. | `verify-ca` |
 | `max_idle_connections` | `integer` | Max number of idle connections that should be kept open (default: `1`) | `10` |
 | `max_open_connections` | `integer` | Max number of open connections at any time (default: `1`) | `15` | 
+
+## `tokens`
+This section contains the details of the tokens that IBCJuno will fetch the latest prices of.
+
+| Attribute | Type | Description | Example |
+| :-------: | :---: | :--------- | :------ |
+| `token` | `object` | Contains token configuration data | | 
+
+### token
+This section contains the info about token name & units 
+
+| Attribute | Type | Description | Example |
+| :-------: | :---: | :--------- | :------ |
+| `name` | `string` | Default denom name | `Desmos` | 
+| `units` | `object` | Contains the details about token units | | 
+
+### units
+This section contains the details about token units 
+| Attribute | Type | Description | Example |
+| :-------: | :---: | :--------- | :------ |
+| `denom` | `string` | Denom unit | `dsm` |
+| `exponent` | `integer` | Denom unit exponent value | `6` |
+| `ibc_denom` | `string` | IBC denom unit | `ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C` |
+| `price_id` | `string` | Coingecko ID | `false` |
+
