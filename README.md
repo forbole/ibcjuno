@@ -1,6 +1,6 @@
 # IBCJuno
 
-IBCJuno is IBC price aggregator and exporter for Cosmos [IBC protocol](https://github.com/cosmos/ibc).
+IBCJuno is an IBC price aggregator and exporter for Cosmos [IBC protocol](https://github.com/cosmos/ibc).
 IBCJuno fetches the latest price of IBC tokens and stores it inside a [PostgreSQL](https://www.postgresql.org/) database on top of which [GraphQL](https://graphql.org/) APIs can be created using [Hasura](https://hasura.io/).
 
 ## Install IBCJuno 
@@ -11,10 +11,10 @@ $ make install
 ```
 
 ## Usage
-To know how to setup and run IBCJuno, please refer to the [docs folder](.docs).
+To know how to set up and run IBCJuno, please refer to the [docs folder](.docs).
 
 ## GraphQL integration
-If you want to know how to run a GraphQL server that allows to expose the parsed data, please refer to the following guides: 
+If you want to know how to run a GraphQL server that allows exposing the parsed data, please refer to the following guides: 
 
 - [PostgreSQL setup with GraphQL](.docs/postgres-graphql-setup.md)
 
