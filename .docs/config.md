@@ -46,7 +46,7 @@ Let's see what each section refers to:
 - [`tokens`](#tokens)
 
 ## `database`
-This section contains all different configuration related to the PostgreSQL database where IBCJuno will write the data.
+This section contains all different configurations related to the PostgreSQL database where IBCJuno will write the data.
 
 | Attribute | Type | Description | Example |
 | :-------: | :---: | :--------- | :------ |
@@ -61,14 +61,14 @@ This section contains all different configuration related to the PostgreSQL data
 | `max_open_connections` | `integer` | Max number of open connections at any time (default: `1`) | `15` | 
 
 ## `tokens`
-This section contains the details of the tokens that IBCJuno will fetch the latest prices of.
+This section contains the details of the tokens that IBCJuno will fetch at the latest prices.
 
 | Attribute | Type | Description | Example |
 | :-------: | :---: | :--------- | :------ |
 | `token` | `object` | Contains token configuration data | | 
 
 ### token
-This section contains the info about token name & units 
+This section contains the info about token names & units 
 
 | Attribute | Type | Description | Example |
 | :-------: | :---: | :--------- | :------ |

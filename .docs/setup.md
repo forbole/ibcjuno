@@ -5,7 +5,7 @@ Setting up IBCJuno is pretty straightforward. It requires three things to be don
 2. Start IBCJuno.
 
 ## Installing IBCJuno
-In order to install IBCJuno you are required to have [Go 1.17+](https://golang.org/dl/) installed on your machine. Once you have it, the first thing to do is to clone the GitHub repository. To do this you can run
+To install IBCJuno you are required to have [Go 1.17+](https://golang.org/dl/) installed on your machine. Once you have it, the first thing to do is to clone the GitHub repository. To do this you can run
 
 ```shell
 $ git clone https://github.com/MonikaCat/ibcjuno.git
@@ -21,8 +21,8 @@ This will put the `ibcjuno` binary inside your `$GOPATH/bin` folder. You should 
 
 ```shell
 $ ibcjuno
-IBCJuno is a IBC price aggregator and exporter. It queries the latest IBC tokens prices
-and stores it inside PostgreSQL database. IBCJuno is meant to run with a GraphQL layer on top
+IBCJuno is an IBC price aggregator and exporter. It queries the latest IBC tokens prices
+and stores them inside PostgreSQL database. IBCJuno is meant to run with a GraphQL layer on top
 to ease the ability for developers and downstream clients to query the latest price of any IBC token.
 
 Usage:
@@ -43,7 +43,7 @@ Use "IBCJuno [command] --help" for more information about a command.
 ```
 
 ## Initializing the configuration
-In order to correctly initialize IBCJuno you need to run the following command: 
+To correctly initialize IBCJuno you need to run the following command: 
 
 ```shell
 $ ibcjuno init
@@ -56,7 +56,7 @@ This will create `.ibcjuno` directory with `config.yaml` file inside.
 $ ibcjuno init --home /path/to/my/folder
 ```
 
-Once the file is created, you are required to edit it and update database and tokens section. To do this you can run
+Once the file is created, you are required to edit it and update the database and tokens section. To do this you can run
 
 ```shell
 $ nano ~/.ibcjuno/config.yaml
@@ -65,7 +65,7 @@ $ nano ~/.ibcjuno/config.yaml
 For a better understanding of what each section and field refers to, please read the [config reference](config.md).
 
 ## Running IBCJuno
-Once the configuration file has been setup, you can run IBCJuno using the following command:
+Once the configuration file has been set up, you can run IBCJuno using the following command:
 
 ```shell
 $ ibcjuno start
@@ -78,7 +78,7 @@ If you are using a custom directory for the configuration file, please specify i
 $ ibcjuno start --home /path/to/my/config/folder
 ```
 
-We highly suggest you running IBCJuno as a system service so that it can be restarted automatically in the case it stops. To do this you can run:
+We highly suggest you run IBCJuno as a system service so that it can be restarted automatically in the case it stops. To do this you can run:
 
 ```shell
 $ sudo tee /etc/systemd/system/ibcjuno.service > /dev/null <<EOF

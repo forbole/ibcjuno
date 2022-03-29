@@ -37,8 +37,8 @@ func RootCmd(name string) *cobra.Command {
 	return &cobra.Command{
 		Use:   name,
 		Short: fmt.Sprintf("%s is a IBC price aggregator and exporter", name),
-		Long: fmt.Sprintf(`%s is a IBC price aggregator and exporter. It queries the latest IBC tokens prices 
-and stores it inside PostgreSQL database. %s is meant to run with a GraphQL layer on top 
+		Long: fmt.Sprintf(`%s is an IBC price aggregator and exporter. It queries the latest IBC tokens prices
+and stores them inside PostgreSQL database. %s is meant to run with a GraphQL layer on top
 to ease the ability for developers and downstream clients to query the latest price of any IBC token.`, name, name),
 	}
 }
