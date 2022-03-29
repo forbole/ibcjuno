@@ -10,6 +10,9 @@ Run inside ibcjuno directory:
 $ make install
 ```
 
+## Usage
+To know how to setup and run IBCJuno, please refer to the [docs folder](.docs).
+
 ## GraphQL integration
 If you want to know how to run a GraphQL server that allows to expose the parsed data, please refer to the following guides: 
 
