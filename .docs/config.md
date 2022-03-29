@@ -82,5 +82,5 @@ This section contains the details about token units
 | `denom` | `string` | Denom unit | `dsm` |
 | `exponent` | `integer` | Denom unit exponent value | `6` |
 | `ibc_denom` | `string` | IBC denom unit | `ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C` |
-| `price_id` | `string` | Coingecko ID | `false` |
+| `price_id` | `string` | Coingecko ID | `desmos` |
 
