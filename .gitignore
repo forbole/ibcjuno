@@ -14,5 +14,4 @@ tools-stamp
 
 # configuration
 *.toml
-*.yaml
 *.DS_Store
