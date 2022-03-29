@@ -41,3 +41,26 @@ Flags:
 
 Use "IBCJuno [command] --help" for more information about a command.
 ```
+
+## Initializing the configuration
+In order to correctly initialize IBCJuno you need to run the following command: 
+
+```shell
+$ ibcjuno init
+```
+
+This will create `.ibcjuno` directory with `config.yaml` file inside.  
+Note that if you want to change the default directory used by IBCJuno you can do this using the `--home` flag:
+
+```shell
+$ ibcjuno init --home /path/to/my/folder
+```
+
+Once the file is created, you are required to edit it and update database and tokens section. To do this you can run
+
+```shell
+$ nano ~/.juno/config.yaml
+```
+
+For a better understanding of what each section and field refers to, please read the [config reference](config.md).
+
