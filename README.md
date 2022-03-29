@@ -10,6 +10,11 @@ Run inside ibcjuno directory:
 $ make install
 ```
 
+## GraphQL integration
+If you want to know how to run a GraphQL server that allows to expose the parsed data, please refer to the following guides: 
+
+- [PostgreSQL setup with GraphQL](.docs/postgres-graphql-setup.md)
+
 ## Contributing
 Contributions are welcome! Please open an Issues or Pull Request for any changes.
 
