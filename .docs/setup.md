@@ -50,7 +50,7 @@ $ ibcjuno init
 ```
 
 This will create `.ibcjuno` directory with `config.yaml` file inside.  
-Note that if you want to change the default directory used by IBCJuno you can do this using the `--home` flag:
+**Note:** If you want to change the default directory used by IBCJuno you can do this using the `--home` flag:
 
 ```shell
 $ ibcjuno init --home /path/to/my/folder
@@ -59,8 +59,54 @@ $ ibcjuno init --home /path/to/my/folder
 Once the file is created, you are required to edit it and update database and tokens section. To do this you can run
 
 ```shell
-$ nano ~/.juno/config.yaml
+$ nano ~/.ibcjuno/config.yaml
 ```
 
 For a better understanding of what each section and field refers to, please read the [config reference](config.md).
 
+## Running IBCJuno
+Once the configuration file has been setup, you can run IBCJuno using the following command:
+
+```shell
+$ ibcjuno start
+```
+
+If you are using a custom directory for the configuration file, please specify it using the `--home` flag:
+
+
+```shell
+$ ibcjuno start --home /path/to/my/config/folder
+```
+
+We highly suggest you running IBCJuno as a system service so that it can be restarted automatically in the case it stops. To do this you can run:
+
+```shell
+$ sudo tee /etc/systemd/system/ibcjuno.service > /dev/null <<EOF
+[Unit]
+Description=IBCJuno aggregator
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$GOPATH/bin/ibcjuno start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+Then you need to enable and start the service:
+
+```shell
+$ sudo systemctl enable ibcjuno
+$ sudo systemctl start ibcjuno
+```
+
+Then you can check the status of ibc service:
+
+```shell
+$ sudo systemctl status ibcjuno
+```
