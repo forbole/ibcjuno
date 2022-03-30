@@ -49,6 +49,10 @@ func DefaultTokensConfig() TokensConfig {
 	var tokenUnit []TokenUnit
 	var defaulToken []Token
 	var ibcTokenUnit []IBCTokenUnit
+	
+	ibcTokenUnit = append(ibcTokenUnit, 
+		NewIBCTokenUnit("udsm", "desmos", "osmosis", "channel-1", 
+	"ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C"))
 	tokenUnit = append(tokenUnit, NewTokenUnit("dsm",
 		ibcTokenUnit, 6, "desmos"))
 	defaulToken = append(defaulToken, NewToken("Desmos", tokenUnit))
@@ -70,6 +74,17 @@ func NewTokenUnit(denom string, ibcDenom []IBCTokenUnit, exponent int, priceID s
 		IBCDenom: ibcDenom,
 		Exponent: exponent,
 		PriceID:  priceID,
+	}
+}
+
+// NewIBCTokenUnit creates new IBCTokenUnit instance
+func NewIBCTokenUnit(denom string, srcChain string, dstChain string, channel string, ibcDenom string) IBCTokenUnit {
+	return IBCTokenUnit{
+		Denom:    denom,
+		SrcChain: srcChain,
+		DstChain: dstChain,
+		Channel:  channel,
+		IBCDenom: ibcDenom,
 	}
 }
 
