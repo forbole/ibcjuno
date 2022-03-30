@@ -14,10 +14,19 @@ type Token struct {
 
 // TokenUnit represents a unit of a token
 type TokenUnit struct {
-	Denom    string `yaml:"denom"`
-	IBCDenom string `yaml:"ibc_denom,omitempty"`
-	Exponent int    `yaml:"exponent"`
-	PriceID  string `yaml:"price_id,omitempty"`
+	Denom    string 		`yaml:"denom"`
+	IBCDenom []IBCTokenUnit `yaml:"ibc_denom,omitempty"`
+	Exponent int    		`yaml:"exponent"`
+	PriceID  string 		`yaml:"price_id,omitempty"`
+}
+
+// IBCTokenUnit represents a unit of a IBC token
+type IBCTokenUnit struct {
+	Denom 	 string `yaml:"denom"`
+	SrcChain string `yaml:"src_chain"`
+	DstChain string `yaml:"dst_chain"`
+	Channel  string `yaml:"channel"`
+	IBCDenom string `yaml:"ibc_denom"`
 }
 
 // TokenPrice represents the price of a token unit
@@ -39,8 +48,9 @@ func NewTokensConfig(tokens []Token) TokensConfig {
 func DefaultTokensConfig() TokensConfig {
 	var tokenUnit []TokenUnit
 	var defaulToken []Token
+	var ibcTokenUnit []IBCTokenUnit
 	tokenUnit = append(tokenUnit, NewTokenUnit("dsm",
-		"ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C", 6, "desmos"))
+		ibcTokenUnit, 6, "desmos"))
 	defaulToken = append(defaulToken, NewToken("Desmos", tokenUnit))
 	return NewTokensConfig(defaulToken)
 }
@@ -54,7 +64,7 @@ func NewToken(name string, units []TokenUnit) Token {
 }
 
 // NewTokenUnit creates new TokenUnit instance
-func NewTokenUnit(denom string, ibcDenom string, exponent int, priceID string) TokenUnit {
+func NewTokenUnit(denom string, ibcDenom []IBCTokenUnit, exponent int, priceID string) TokenUnit {
 	return TokenUnit{
 		Denom:    denom,
 		IBCDenom: ibcDenom,

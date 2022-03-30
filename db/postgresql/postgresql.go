@@ -87,13 +87,14 @@ func (db *Database) SaveToken(token types.Token) error {
 		return err
 	}
 
-	query = `INSERT INTO token_unit (token_name, denom, ibc_denom, exponent, price_id) VALUES `
+	// store tokens unit details
+	query = `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
 	var params []interface{}
 
 	for i, unit := range token.Units {
-		ui := i * 5
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4, ui+5)
-		params = append(params, token.Name, unit.Denom, utils.ToNullString(unit.IBCDenom), unit.Exponent,
+		ui := i * 4
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4)
+		params = append(params, token.Name, unit.Denom, unit.Exponent,
 			utils.ToNullString(unit.PriceID))
 	}
 
@@ -101,7 +102,28 @@ func (db *Database) SaveToken(token types.Token) error {
 	query += " ON CONFLICT DO NOTHING"
 	_, err = db.Sql.Exec(query, params...)
 	if err != nil {
-		return fmt.Errorf("error while saving token: %s", err)
+		return fmt.Errorf("error while saving tokens: %s", err)
+	}
+
+	// store ibc tokens details
+	query = `INSERT INTO token_ibc_denom (denom, src_chain, dst_chain, channel, ibc_denom) VALUES `
+	var ibcparams []interface{}
+
+	for _, unit := range token.Units {
+		for j, ibcUnit := range unit.IBCDenom{
+		uj := j * 5
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5)
+		ibcparams = append(ibcparams,  unit.Denom, ibcUnit.SrcChain,
+		ibcUnit.DstChain, ibcUnit.Channel, ibcUnit.IBCDenom)
+		}
+	
+	}
+
+	query = query[:len(query)-1] // Remove trailing ","
+	query += " ON CONFLICT DO NOTHING"
+	_, err = db.Sql.Exec(query, ibcparams...)
+	if err != nil {
+		return fmt.Errorf("error while saving ibc tokens: %s", err)
 	}
 
 	return nil

@@ -9,9 +9,18 @@ CREATE TABLE token_unit
 (
     token_name TEXT NOT NULL REFERENCES token (name),
     denom      TEXT NOT NULL UNIQUE,
-    ibc_denom  TEXT UNIQUE,
     exponent   INT  NOT NULL,
     price_id   TEXT
+);
+
+CREATE TABLE token_ibc_denom
+(
+  denom TEXT NOT NULL REFERENCES token_unit (denom),
+  src_chain   TEXT NOT NULL,
+  dst_chain   TEXT NOT NULL,
+  channel     TEXT NOT NULL,
+  ibc_denom   TEXT NOT NULL UNIQUE,
+  CONSTRAINT unique_token_ibc_denom UNIQUE (denom, ibc_denom)
 );
 
 /* ---- TOKEN PRICES ---- */
