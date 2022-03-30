@@ -14,12 +14,28 @@ object_relationships:
       remote_table:
         name: token_price
         schema: public
+- name: token_ibc_denom
+  using:
+    manual_configuration:
+      column_mapping:
+        denom: denom
+      insertion_order: null
+      remote_table:
+        name: token_ibc_denom
+        schema: public
+array_relationships:
+- name: token_ibc_denom
+  using:
+    foreign_key_constraint_on:
+      column: denom
+      table:
+        name: token_ibc_denom
+        schema: public
 select_permissions:
 - permission:
     allow_aggregations: true
     columns:
     - denom
-    - ibc_denom
     - exponent
     - price_id
     - token_name
