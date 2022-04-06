@@ -6,12 +6,14 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/MonikaCat/ibcjuno/utils"
-	workerctx "github.com/MonikaCat/ibcjuno/worker"
 	"github.com/rs/zerolog/log"
 
-	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
+	"github.com/MonikaCat/ibcjuno/utils"
+	workerctx "github.com/MonikaCat/ibcjuno/worker"
+
 	"github.com/spf13/cobra"
+
+	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
 )
 
 var (

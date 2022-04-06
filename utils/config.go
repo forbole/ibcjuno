@@ -2,7 +2,7 @@ package utils
 
 import (
 	databaseconfig "github.com/MonikaCat/ibcjuno/db/config"
-	tokensconfig "github.com/MonikaCat/ibcjuno/token"
+	tokensconfig "github.com/MonikaCat/ibcjuno/types"
 )
 
 var (

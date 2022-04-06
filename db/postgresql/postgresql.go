@@ -4,14 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 
-	database "github.com/MonikaCat/ibcjuno/db"
-	dbtypes "github.com/MonikaCat/ibcjuno/db/types"
-	types "github.com/MonikaCat/ibcjuno/token"
-	"github.com/MonikaCat/ibcjuno/token/coingecko"
-	utils "github.com/MonikaCat/ibcjuno/utils"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // nolint
 	"github.com/rs/zerolog/log"
+
+	database "github.com/MonikaCat/ibcjuno/db"
+	dbtypes "github.com/MonikaCat/ibcjuno/db/types"
+	types "github.com/MonikaCat/ibcjuno/types"
+	"github.com/MonikaCat/ibcjuno/types/coingecko"
+	utils "github.com/MonikaCat/ibcjuno/utils"
 )
 
 // Database defines a wrapper around a SQL database and implements functionality
@@ -81,47 +82,46 @@ func (db *Database) GetTokensPriceID() ([]string, error) {
 
 // SaveToken allows to save the given token details inside database
 func (db *Database) SaveToken(token types.Token) error {
-	query := `INSERT INTO token (name) VALUES ($1) ON CONFLICT DO NOTHING`
-	_, err := db.Sql.Exec(query, token.Name)
+	tokenStmt := `INSERT INTO token (name) VALUES ($1) ON CONFLICT DO NOTHING`
+	_, err := db.Sql.Exec(tokenStmt, token.Name)
 	if err != nil {
 		return err
 	}
 
-	// store tokens unit details
-	query = `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
+	// Store tokens unit details
+	tokenUnitStmt := `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
 	var params []interface{}
 
+	// Store IBC details
+	tokenIBCStmt := `INSERT INTO token_ibc_denom (denom, src_chain, dst_chain, channel, ibc_denom) VALUES `
+	var ibcparams []interface{}
+
+	var ibcTokenIndex = 0
 	for i, unit := range token.Units {
 		ui := i * 4
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4)
-		params = append(params, token.Name, unit.Denom, unit.Exponent,
-			utils.ToNullString(unit.PriceID))
+		tokenUnitStmt += fmt.Sprintf("($%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4)
+		params = append(params, token.Name, unit.Denom, unit.Exponent, utils.ToNullString(unit.PriceID))
+
+		for _, ibcUnit := range unit.IBCDenom {
+			uj := ibcTokenIndex * 5
+			tokenStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5)
+			ibcparams = append(ibcparams, unit.Denom, ibcUnit.SrcChain, ibcUnit.DstChain, ibcUnit.Channel, ibcUnit.IBCDenom)
+
+			// Increment the token index
+			ibcTokenIndex++
+		}
 	}
 
-	query = query[:len(query)-1] // Remove trailing ","
-	query += " ON CONFLICT DO NOTHING"
-	_, err = db.Sql.Exec(query, params...)
+	tokenUnitStmt = tokenUnitStmt[:len(tokenUnitStmt)-1] // Remove trailing ","
+	tokenUnitStmt += " ON CONFLICT DO NOTHING"
+	_, err = db.Sql.Exec(tokenUnitStmt, params...)
 	if err != nil {
 		return fmt.Errorf("error while saving tokens: %s", err)
 	}
 
-	// store ibc tokens details
-	query = `INSERT INTO token_ibc_denom (denom, src_chain, dst_chain, channel, ibc_denom) VALUES `
-	var ibcparams []interface{}
-
-	for _, unit := range token.Units {
-		for j, ibcUnit := range unit.IBCDenom{
-		uj := j * 5
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5)
-		ibcparams = append(ibcparams,  unit.Denom, ibcUnit.SrcChain,
-		ibcUnit.DstChain, ibcUnit.Channel, ibcUnit.IBCDenom)
-		}
-	
-	}
-
-	query = query[:len(query)-1] // Remove trailing ","
-	query += " ON CONFLICT DO NOTHING"
-	_, err = db.Sql.Exec(query, ibcparams...)
+	tokenIBCStmt = tokenIBCStmt[:len(tokenIBCStmt)-1] // Remove trailing ","
+	tokenIBCStmt += " ON CONFLICT DO NOTHING"
+	_, err = db.Sql.Exec(tokenIBCStmt, ibcparams...)
 	if err != nil {
 		return fmt.Errorf("error while saving ibc tokens: %s", err)
 	}

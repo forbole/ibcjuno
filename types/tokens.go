@@ -14,15 +14,15 @@ type Token struct {
 
 // TokenUnit represents a unit of a token
 type TokenUnit struct {
-	Denom    string 		`yaml:"denom"`
+	Denom    string         `yaml:"denom"`
+	Exponent int            `yaml:"exponent"`
+	PriceID  string         `yaml:"price_id,omitempty"`
 	IBCDenom []IBCTokenUnit `yaml:"ibc_denom,omitempty"`
-	Exponent int    		`yaml:"exponent"`
-	PriceID  string 		`yaml:"price_id,omitempty"`
 }
 
 // IBCTokenUnit represents a unit of a IBC token
 type IBCTokenUnit struct {
-	Denom 	 string `yaml:"denom"`
+	Denom    string `yaml:"denom"`
 	SrcChain string `yaml:"src_chain"`
 	DstChain string `yaml:"dst_chain"`
 	Channel  string `yaml:"channel"`
@@ -46,17 +46,24 @@ func NewTokensConfig(tokens []Token) TokensConfig {
 
 // DefaultTokensConfig returns default TokensConfig instance
 func DefaultTokensConfig() TokensConfig {
-	var tokenUnit []TokenUnit
-	var defaulToken []Token
-	var ibcTokenUnit []IBCTokenUnit
-	
-	ibcTokenUnit = append(ibcTokenUnit, 
-		NewIBCTokenUnit("udsm", "desmos", "osmosis", "channel-1", 
-	"ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C"))
-	tokenUnit = append(tokenUnit, NewTokenUnit("dsm",
-		ibcTokenUnit, 6, "desmos"))
-	defaulToken = append(defaulToken, NewToken("Desmos", tokenUnit))
-	return NewTokensConfig(defaulToken)
+	return NewTokensConfig([]Token{
+		NewToken("Desmos", []TokenUnit{
+			NewTokenUnit(
+				"dsm",
+				6,
+				"desmos",
+				[]IBCTokenUnit{
+					NewIBCTokenUnit(
+						"udsm",
+						"desmos",
+						"osmosis",
+						"channel-1",
+						"ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C",
+					),
+				},
+			),
+		}),
+	})
 }
 
 // NewToken creates new Token instance
@@ -68,7 +75,7 @@ func NewToken(name string, units []TokenUnit) Token {
 }
 
 // NewTokenUnit creates new TokenUnit instance
-func NewTokenUnit(denom string, ibcDenom []IBCTokenUnit, exponent int, priceID string) TokenUnit {
+func NewTokenUnit(denom string, exponent int, priceID string, ibcDenom []IBCTokenUnit) TokenUnit {
 	return TokenUnit{
 		Denom:    denom,
 		IBCDenom: ibcDenom,

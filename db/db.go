@@ -2,7 +2,7 @@ package db
 
 import (
 	utils "github.com/MonikaCat/ibcjuno/db/config"
-	types "github.com/MonikaCat/ibcjuno/token"
+	types "github.com/MonikaCat/ibcjuno/types"
 )
 
 type Database interface {

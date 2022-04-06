@@ -8,11 +8,12 @@ import (
 	"net/http"
 	"strings"
 
-	types "github.com/MonikaCat/ibcjuno/token"
 	"github.com/rs/zerolog/log"
+
+	types "github.com/MonikaCat/ibcjuno/types"
 )
 
-// GetLatestTokensPrices queries the remote APIs to get the latest prices 
+// GetLatestTokensPrices queries the remote APIs to get the latest prices
 // of the tokens defined in config file
 func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
 	var prices []MarketTicker
