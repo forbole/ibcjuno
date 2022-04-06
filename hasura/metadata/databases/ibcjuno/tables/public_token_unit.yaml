@@ -5,7 +5,7 @@ object_relationships:
 - name: token
   using:
     foreign_key_constraint_on: token_name
-- name: token_price
+- name: price
   using:
     manual_configuration:
       column_mapping:
