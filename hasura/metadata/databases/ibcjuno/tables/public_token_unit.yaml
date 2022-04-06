@@ -24,7 +24,7 @@ object_relationships:
         name: token_ibc_denom
         schema: public
 array_relationships:
-- name: token_ibc_denom
+- name: ibc_denoms
   using:
     foreign_key_constraint_on:
       column: denom
