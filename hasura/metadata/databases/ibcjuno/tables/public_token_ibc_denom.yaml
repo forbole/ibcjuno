@@ -2,7 +2,7 @@ table:
   name: token_ibc_denom
   schema: public
 object_relationships:
-- name: token_unit
+- name: unit
   using:
     foreign_key_constraint_on: denom
 select_permissions:
