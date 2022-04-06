@@ -7,35 +7,27 @@ The default `config.yaml` file should look like the following:
 
 ```yaml
 database:
-  host: localhost
-  max_idle_connections: 0
-  max_open_connections: 0
-  name: database-name
-  password: password
-  port: 5432
-  schema: public
-  ssl_mode: 
-  user: user
-
+    name: database-name
+    host: localhost
+    port: 5432
+    user: user
+    password: password
+    schema: public
+    max_open_connections: 1
+    max_idle_connections: 1
 tokens:
     token:
         - name: Desmos
           units:
-            - denom: udsm
-              exponent: 0
-              ibc_denom: ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C
             - denom: dsm
+              ibc_denom:
+                - denom: udsm
+                  src_chain: desmos
+                  dst_chain: osmosis
+                  channel: channel-1
+                  ibc_denom: ibc/EA4C0A9F72E2CEDF10D0E7A9A6A22954DB3444910DB5BE980DF59B05A46DAD1C
               exponent: 6
               price_id: desmos
-        - name: Atom
-          units:
-            - denom: uatom
-              exponent: 0
-              ibc_denom: ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2
-            - denom: atom
-              exponent: 6
-              price_id: cosmos
-
 ```
 
 </details>
