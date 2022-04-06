@@ -5,15 +5,6 @@ object_relationships:
 - name: token
   using:
     foreign_key_constraint_on: token_name
-- name: price
-  using:
-    manual_configuration:
-      column_mapping:
-        denom: unit_name
-      insertion_order: null
-      remote_table:
-        name: token_price
-        schema: public
 - name: token_ibc_denom
   using:
     manual_configuration:
