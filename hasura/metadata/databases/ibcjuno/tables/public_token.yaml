@@ -2,7 +2,7 @@ table:
   name: token
   schema: public
 array_relationships:
-- name: token_units
+- name: units
   using:
     foreign_key_constraint_on:
       column: token_name
