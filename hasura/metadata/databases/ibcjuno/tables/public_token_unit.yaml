@@ -1,0 +1,34 @@
+table:
+  name: token_unit
+  schema: public
+object_relationships:
+- name: token
+  using:
+    foreign_key_constraint_on: token_name
+- name: token_ibc_denom
+  using:
+    manual_configuration:
+      column_mapping:
+        denom: denom
+      insertion_order: null
+      remote_table:
+        name: token_ibc_denom
+        schema: public
+array_relationships:
+- name: ibc_denoms
+  using:
+    foreign_key_constraint_on:
+      column: denom
+      table:
+        name: token_ibc_denom
+        schema: public
+select_permissions:
+- permission:
+    allow_aggregations: true
+    columns:
+    - denom
+    - exponent
+    - price_id
+    - token_name
+    filter: {}
+  role: anonymous
