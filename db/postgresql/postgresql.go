@@ -104,7 +104,7 @@ func (db *Database) SaveToken(token types.Token) error {
 
 		for _, ibcUnit := range unit.IBCDenom {
 			uj := ibcTokenIndex * 5
-			tokenStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5)
+			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5)
 			ibcparams = append(ibcparams, unit.Denom, ibcUnit.SrcChain, ibcUnit.DstChain, ibcUnit.Channel, ibcUnit.IBCDenom)
 
 			// Increment the token index
