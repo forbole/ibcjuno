@@ -8,11 +8,11 @@ import (
 	_ "github.com/lib/pq" // nolint
 	"github.com/rs/zerolog/log"
 
-	database "github.com/MonikaCat/ibcjuno/db"
-	dbtypes "github.com/MonikaCat/ibcjuno/db/types"
-	types "github.com/MonikaCat/ibcjuno/types"
-	"github.com/MonikaCat/ibcjuno/types/coingecko"
-	utils "github.com/MonikaCat/ibcjuno/utils"
+	database "github.com/forbole/ibcjuno/db"
+	dbtypes "github.com/forbole/ibcjuno/db/types"
+	types "github.com/forbole/ibcjuno/types"
+	"github.com/forbole/ibcjuno/types/coingecko"
+	utils "github.com/forbole/ibcjuno/utils"
 )
 
 // Database defines a wrapper around a SQL database and implements functionality

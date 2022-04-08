@@ -1,8 +1,8 @@
 package builder
 
 import (
-	database "github.com/MonikaCat/ibcjuno/db"
-	"github.com/MonikaCat/ibcjuno/db/postgresql"
+	database "github.com/forbole/ibcjuno/db"
+	"github.com/forbole/ibcjuno/db/postgresql"
 )
 
 // DatabaseBuilder represents ConnectDatabase implementation that builds database

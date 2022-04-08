@@ -10,7 +10,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	types "github.com/MonikaCat/ibcjuno/types"
+	types "github.com/forbole/ibcjuno/types"
 )
 
 // GetLatestTokensPrices queries the remote APIs to get the latest prices

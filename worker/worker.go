@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	postgresql "github.com/MonikaCat/ibcjuno/db"
+	postgresql "github.com/forbole/ibcjuno/db"
 
-	"github.com/MonikaCat/ibcjuno/utils"
+	"github.com/forbole/ibcjuno/utils"
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"

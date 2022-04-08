@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	config "github.com/MonikaCat/ibcjuno/utils"
+	config "github.com/forbole/ibcjuno/utils"
 
 	"github.com/spf13/cobra"
 )

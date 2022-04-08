@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/MonikaCat/ibcjuno/worker"
+	"github.com/forbole/ibcjuno/worker"
 
-	database "github.com/MonikaCat/ibcjuno/db"
-	"github.com/MonikaCat/ibcjuno/utils"
+	database "github.com/forbole/ibcjuno/db"
+	"github.com/forbole/ibcjuno/utils"
 )
 
 // GetStartContext sets up database context

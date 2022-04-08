@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/MonikaCat/ibcjuno/cmd"
-	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
+	"github.com/forbole/ibcjuno/cmd"
+	types "github.com/forbole/ibcjuno/cmd/start/config"
 )
 
 func main() {
