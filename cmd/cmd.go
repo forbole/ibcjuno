@@ -5,10 +5,10 @@ import (
 	"os"
 	"path"
 
-	initcmd "github.com/MonikaCat/ibcjuno/cmd/init"
-	startcmd "github.com/MonikaCat/ibcjuno/cmd/start"
+	initcmd "github.com/forbole/ibcjuno/cmd/init"
+	startcmd "github.com/forbole/ibcjuno/cmd/start"
 
-	utils "github.com/MonikaCat/ibcjuno/utils"
+	utils "github.com/forbole/ibcjuno/utils"
 
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"

@@ -1,7 +1,7 @@
 package worker
 
 import (
-	database "github.com/MonikaCat/ibcjuno/db"
+	database "github.com/forbole/ibcjuno/db"
 )
 
 // WorkerContext represents the context that is shared with worker

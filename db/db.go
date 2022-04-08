@@ -1,8 +1,8 @@
 package db
 
 import (
-	utils "github.com/MonikaCat/ibcjuno/db/config"
-	types "github.com/MonikaCat/ibcjuno/types"
+	utils "github.com/forbole/ibcjuno/db/config"
+	types "github.com/forbole/ibcjuno/types"
 )
 
 type Database interface {

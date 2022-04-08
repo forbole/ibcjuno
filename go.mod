@@ -1,4 +1,4 @@
-module github.com/MonikaCat/ibcjuno
+module github.com/forbole/ibcjuno
 
 go 1.13
 

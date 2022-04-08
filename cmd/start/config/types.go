@@ -1,9 +1,9 @@
 package config
 
 import (
-	database "github.com/MonikaCat/ibcjuno/db"
-	builder "github.com/MonikaCat/ibcjuno/db/builder"
-	utils "github.com/MonikaCat/ibcjuno/utils"
+	database "github.com/forbole/ibcjuno/db"
+	builder "github.com/forbole/ibcjuno/db/builder"
+	utils "github.com/forbole/ibcjuno/utils"
 )
 
 // StartConfig contains all the configuration for "start" command

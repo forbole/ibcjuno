@@ -8,12 +8,12 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/MonikaCat/ibcjuno/utils"
-	workerctx "github.com/MonikaCat/ibcjuno/worker"
+	"github.com/forbole/ibcjuno/utils"
+	workerctx "github.com/forbole/ibcjuno/worker"
 
 	"github.com/spf13/cobra"
 
-	types "github.com/MonikaCat/ibcjuno/cmd/start/config"
+	types "github.com/forbole/ibcjuno/cmd/start/config"
 )
 
 var (

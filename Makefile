@@ -20,8 +20,8 @@ go.sum: go.mod
 ###                                  Build                                  ###
 ###############################################################################
 
-LD_FLAGS = -X github.com/MonikaCat/ibcjuno/cmd.Version=$(VERSION) \
- 	-X github.com/MonikaCat/ibcjuno/cmd.Commit=$(COMMIT)
+LD_FLAGS = -X github.com/forbole/ibcjuno/cmd.Version=$(VERSION) \
+ 	-X github.com/forbole/ibcjuno/cmd.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
 
@@ -52,7 +52,7 @@ lint-fix:
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs gofmt -w -s
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/MonikaCat/ibcjuno
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/forbole/ibcjuno
 .PHONY: format
 
 ###############################################################################
