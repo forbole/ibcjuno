@@ -1,8 +1,8 @@
 package utils
 
 import (
+	apiconfig "github.com/forbole/ibcjuno/api/config"
 	databaseconfig "github.com/forbole/ibcjuno/database/config"
-	tokensconfig "github.com/forbole/ibcjuno/types"
 )
 
 var (
@@ -14,26 +14,26 @@ var (
 type Config struct {
 	bytes []byte
 
+	API      apiconfig.APIConfig           `yaml:"api"`
 	Database databaseconfig.DatabaseConfig `yaml:"database"`
-	Tokens   tokensconfig.TokensConfig     `yaml:"tokens"`
 }
 
 // NewConfig builds new Config instance
 func NewConfig(
+	api apiconfig.APIConfig,
 	dbConfig databaseconfig.DatabaseConfig,
-	tokensConfig tokensconfig.TokensConfig,
 ) Config {
 	return Config{
+		API:      api,
 		Database: dbConfig,
-		Tokens:   tokensConfig,
 	}
 }
 
 // DefaultConfig returns default Config instance
 func DefaultConfig() Config {
 	return NewConfig(
+		apiconfig.DefaultAPIConfig(),
 		databaseconfig.DefaultDatabaseConfig(),
-		tokensconfig.DefaultTokensConfig(),
 	)
 }
 

@@ -1,77 +1,39 @@
 package worker
 
 import (
-	"fmt"
-	"time"
+	postgresql "github.com/forbole/ibcjuno/database"
 
-	postgresql "github.com/forbole/ibcjuno/db"
-
-	"github.com/forbole/ibcjuno/utils"
-
-	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 )
 
+// Worker defines a job consumer that is responsible for getting
+// latest IBC token price data and exporting it to a database.
 type Worker struct {
 	db postgresql.Database
 }
 
+// NewWorker allows to create a new Worker implementation.
 func NewWorker(ctx *WorkerContext) Worker {
 	return Worker{db: ctx.Database}
 }
 
+// StartWorker starts a worker that triggers periodic operations
+// to update the IBC tokens info and price stored in database in given interval.
+// It returns an error if any export process fails.
 func (w Worker) StartWorker() {
 
-	if err := w.startFetchingPrices(); err != nil {
+	// Start fetching tokens prices every 5 mins
+	if err := w.StartFetchingPrices(); err != nil {
 		go func() {
 			log.Info().Msg("error when starting processig token prices")
 		}()
 	}
 
-}
-
-// startFetchingPrices starts the cron job to fetch and store tokens prices every 2 mins
-func (w Worker) startFetchingPrices() error {
-	scheduler := gocron.NewScheduler(time.UTC)
-
-	// Fetch the token prices every 2 mins
-	if _, err := scheduler.Every(2).Minutes().Do(func() {
-		utils.WatchMethod(w.updatePrices)
-	}); err != nil {
-		return fmt.Errorf("error while setting up period operations: %s", err)
+	// Start fetching IBC token details every day
+	if err := w.StartFetchingLatestIBCTokensInfo(); err != nil {
+		go func() {
+			log.Info().Msg("error when starting processig latest IBC tokens info")
+		}()
 	}
 
-	scheduler.StartAsync()
-	return nil
-}
-
-func (w Worker) updatePrices() error {
-	log.Info().Msg("updating prices...")
-
-	// Get latest tokens prices
-	prices, err := w.db.GetTokenPrices()
-	if err != nil {
-		return fmt.Errorf("error while getting token prices: %s", err)
-	}
-
-	// Save the token prices
-	err = w.db.SaveTokensPrices(prices)
-	if err != nil {
-		return fmt.Errorf("error while saving token prices: %s", err)
-	}
-
-	return nil
-}
-
-// StoreTokensDetails saves tokens defined inside config.yaml file into database
-func (w *Worker) StoreTokensDetails(cfg utils.Config) error {
-	for _, coin := range cfg.Tokens.Tokens {
-		// Save the coin as a token with its units
-		err := w.db.SaveToken(coin)
-		if err != nil {
-			return fmt.Errorf("error while saving token: %s", err)
-		}
-	}
-
-	return nil
 }

@@ -1,4 +1,4 @@
-package coingecko
+package types
 
 import "time"
 
@@ -10,9 +10,6 @@ type MarketTicker struct {
 	LastUpdated  time.Time `json:"last_updated"`
 }
 
-// MarketTickers represents an array of MarketTicker
-type MarketTickers []MarketTicker
-
 // Token contains the information of a single token
 type Token struct {
 	ID     string `json:"id"`
@@ -22,3 +19,21 @@ type Token struct {
 
 // Tokens represents a list of Token objects
 type Tokens []Token
+
+// TokenPrice represents the price of a token unit
+type TokenPrice struct {
+	UnitName  string
+	Price     float64
+	MarketCap int64
+	Timestamp time.Time
+}
+
+// NewTokenPrice creates new TokenPrice instance
+func NewTokenPrice(unitName string, price float64, marketCap int64, timestamp time.Time) TokenPrice {
+	return TokenPrice{
+		UnitName:  unitName,
+		Price:     price,
+		MarketCap: marketCap,
+		Timestamp: timestamp,
+	}
+}

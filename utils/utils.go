@@ -48,3 +48,16 @@ func Write(cfg Config, path string) error {
 
 	return ioutil.WriteFile(path, bz, 0666)
 }
+
+// RemoveDuplicates function removes duplicate values
+func RemoveDuplicates(s []string) []string {
+	bucket := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := bucket[str]; !ok {
+			bucket[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
+}
