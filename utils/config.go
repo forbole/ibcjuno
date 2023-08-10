@@ -1,7 +1,7 @@
 package utils
 
 import (
-	databaseconfig "github.com/forbole/ibcjuno/db/config"
+	databaseconfig "github.com/forbole/ibcjuno/database/config"
 	tokensconfig "github.com/forbole/ibcjuno/types"
 )
 

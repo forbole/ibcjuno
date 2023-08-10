@@ -3,7 +3,7 @@ package config
 import (
 	"github.com/forbole/ibcjuno/worker"
 
-	database "github.com/forbole/ibcjuno/db"
+	database "github.com/forbole/ibcjuno/database"
 	"github.com/forbole/ibcjuno/utils"
 )
 
