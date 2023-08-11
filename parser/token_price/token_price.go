@@ -15,14 +15,25 @@ import (
 
 // GetLatestTokensPrices queries the remote APIs to get the latest prices
 func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
-	var prices []types.MarketTicker
-	query := fmt.Sprintf("/coins/markets?vs_currency=usd&ids=%s", strings.Join(ids, ","))
-	err := queryCoinGecko(query, &prices)
-	if err != nil {
-		return nil, err
+	var tokensPrices []types.MarketTicker
+	priceIDs := SplitPriceIDs(ids)
+
+	for _, priceIDSlice := range priceIDs {
+		if len(priceIDSlice) == 0 {
+			continue
+		}
+
+		var prices []types.MarketTicker
+		query := fmt.Sprintf("/coins/markets?vs_currency=usd&ids=%s", strings.Join(priceIDSlice, ","))
+		err := queryCoinGecko(query, &prices)
+		if err != nil {
+			return nil, err
+		}
+		tokensPrices = append(tokensPrices, prices...)
 	}
 
-	return ConvertCoingeckoPrices(prices), nil
+
+	return ConvertCoingeckoPrices(tokensPrices), nil
 }
 
 func ConvertCoingeckoPrices(prices []types.MarketTicker) []types.TokenPrice {
@@ -60,4 +71,20 @@ func queryCoinGecko(endpoint string, ptr interface{}) error {
 	}
 
 	return nil
+}
+
+func SplitPriceIDs(ids []string) [][]string {
+	maxBalancesPerSlice := 50
+	slices := make([][]string, len(ids)/maxBalancesPerSlice+1)
+
+	sliceIndex := 0
+	for index, priceID := range ids {
+		slices[sliceIndex] = append(slices[sliceIndex], priceID)
+
+		if index > 0 && index%(maxBalancesPerSlice-1) == 0 {
+			sliceIndex++
+		}
+	}
+
+	return slices
 }
