@@ -2,7 +2,6 @@ package postgresql
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -82,65 +81,6 @@ func (db *Database) GetTokensPriceID() ([]string, error) {
 	return priceIDList, nil
 }
 
-// SaveIBCTokens allows to save the given IBC tokens details inside database
-func (db *Database) SaveIBCTokens(token []types.IBCTokenUnit) error {
-	// Store tokens name
-	tokenStmt := `INSERT INTO token (name) VALUES `
-	var tokenparams []interface{}
-
-	// Store token unit details
-	tokenUnitStmt := `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
-	var params []interface{}
-
-	// Store IBC token details
-	tokenIBCStmt := `INSERT INTO token_ibc_denom (denom, origin_chain, origin_denom, origin_type, 
-		symbol, enable, path, channel, counter_party) VALUES `
-	var ibcparams []interface{}
-
-	for i, ibcDenom := range token {
-		u := i * 1
-		tokenStmt += fmt.Sprintf("($%d),", u+1)
-		tokenparams = append(tokenparams, ibcDenom.Symbol)
-
-		ui := i * 4
-		tokenUnitStmt += fmt.Sprintf("($%d,$%d,$%d,$%d),", ui+1, ui+2, ui+3, ui+4)
-
-		params = append(params, ibcDenom.Symbol, ibcDenom.Denom, ibcDenom.Decimals, utils.ToNullString(ibcDenom.CoingeckoID))
-
-		uj := i * 9
-		tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),", uj+1, uj+2, uj+3, uj+4, uj+5, uj+6, uj+7, uj+8, uj+9)
-		counterpartyBz, err := json.Marshal(&ibcDenom.CounterParty)
-		if err != nil {
-			return err
-		}
-		ibcparams = append(ibcparams, ibcDenom.Denom, ibcDenom.OriginChain, ibcDenom.OriginDenom, ibcDenom.OriginType,
-			ibcDenom.Symbol, ibcDenom.Enable, ibcDenom.Path, ibcDenom.Channel, string(counterpartyBz))
-	}
-
-	tokenStmt = tokenStmt[:len(tokenStmt)-1] // Remove trailing ","
-	tokenStmt += " ON CONFLICT DO NOTHING"
-	_, err := db.Sql.Exec(tokenStmt, tokenparams...)
-	if err != nil {
-		return fmt.Errorf("error while saving tokens: %s", err)
-	}
-
-	tokenUnitStmt = tokenUnitStmt[:len(tokenUnitStmt)-1] // Remove trailing ","
-	tokenUnitStmt += " ON CONFLICT DO NOTHING"
-	_, err = db.Sql.Exec(tokenUnitStmt, params...)
-	if err != nil {
-		return fmt.Errorf("error while saving tokens unit: %s", err)
-	}
-
-	tokenIBCStmt = tokenIBCStmt[:len(tokenIBCStmt)-1] // Remove trailing ","
-	tokenIBCStmt += " ON CONFLICT DO NOTHING"
-	_, err = db.Sql.Exec(tokenIBCStmt, ibcparams...)
-	if err != nil {
-		return fmt.Errorf("error while saving IBC tokens: %s", err)
-	}
-
-	return err
-}
-
 // SaveTokensPrices allows to store the latest tokens price inside database
 func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 	if len(prices) == 0 {
@@ -175,4 +115,81 @@ func (db *Database) Close() {
 	if err != nil {
 		log.Error().Err(err).Msg("error while closing connection: ")
 	}
+}
+
+// SaveIBCTokens allows to save the given IBC tokens details inside database
+func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
+	// Store tokens name
+	tokenStmt := `INSERT INTO token (name) VALUES `
+	var tokenParams []interface{}
+
+	// Store token unit details
+	tokenUnitStmt := `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
+	var tokenUnitParams []interface{}
+
+	// Store IBC token details
+	tokenIBCStmt := `INSERT INTO token_ibc_denom_new (denom, origin_chain, target_denom, target_chain,
+		is_stale, trade_url, timestamp) VALUES `
+	var tokenIBCParams []interface{}
+
+	// Initialise the indexes
+	indexIBCToken := 0
+	indexTokenUnits := 0
+
+	for i, ibcDenom := range token {
+		u := i * 1
+		tokenStmt += fmt.Sprintf("($%d),", u+1)
+		tokenParams = append(tokenParams, ibcDenom.Name)
+
+		for _, denomUnit := range ibcDenom.DenomUnits {
+			di := indexTokenUnits * 4
+
+			tokenUnitStmt += fmt.Sprintf("($%d,$%d,$%d,$%d),", di+1, di+2, di+3, di+4)
+
+			if denomUnit.Exponent == 0 {
+				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, denomUnit.Denom, denomUnit.Exponent, "")
+
+			} else {
+				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, denomUnit.Denom, denomUnit.Exponent, ibcDenom.CoingeckoID)
+			}
+
+			indexTokenUnits++
+		}
+
+		for _, ibc := range ibcDenom.Tickers {
+			cj := indexIBCToken * 7
+
+			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6, cj+7)
+			tokenIBCParams = append(tokenIBCParams, ibc.Denom, ibc.OriginChain, ibc.TargetDenom, ibc.TargetChain,
+				ibc.IsStale, ibc.TradeURL, ibc.Timestamp)
+
+			indexIBCToken++
+		}
+
+	}
+
+	tokenStmt = tokenStmt[:len(tokenStmt)-1] // Remove trailing ","
+	tokenStmt += " ON CONFLICT DO NOTHING"
+	_, err := db.Sql.Exec(tokenStmt, tokenParams...)
+	if err != nil {
+		return fmt.Errorf("error while saving tokens: %s", err)
+	}
+
+	tokenUnitStmt = tokenUnitStmt[:len(tokenUnitStmt)-1] // Remove trailing ","
+	tokenUnitStmt += " ON CONFLICT DO NOTHING"
+	_, err = db.Sql.Exec(tokenUnitStmt, tokenUnitParams...)
+	if err != nil {
+		return fmt.Errorf("error while saving tokens unit: %s", err)
+	}
+
+	tokenIBCStmt = tokenIBCStmt[:len(tokenIBCStmt)-1] // Remove trailing ","
+	tokenIBCStmt += " ON CONFLICT DO NOTHING"
+	_, err = db.Sql.Exec(tokenIBCStmt, tokenIBCParams...)
+	if err != nil {
+		return fmt.Errorf("error while saving IBC tokens: %s", err)
+	}
+
+	log.Info().Msg("** finished processing and storing IBC tokens info in database! ** ")
+
+	return err
 }

@@ -30,46 +30,78 @@ func (w Worker) StartFetchingLatestIBCTokensInfo() error {
 
 // GetIBCTokensList queries the latest IBC chain list
 // and latest IBC token details from the given endpoint
-func (w *Worker) GetIBCTokensList() ([]types.IBCTokenUnit, error) {
+func (w *Worker) GetIBCTokensList() ([]types.ChainRegistryAsset, error) {
+	log.Info().Msg("getting IBC chain list from chain registry...")
+
 	// query list of IBC supported networks
-	chainList, err := ibctoken.QueryIBCChainList()
+	chainList, err := ibctoken.QueryIBCChainListFromChainRegistry()
 	if err != nil {
-		log.Error().Err(err).Msg("error while getting IBC chain list")
-		return []types.IBCTokenUnit{}, err
+		log.Error().Err(err).Msg("error while getting IBC chain list from chain registry")
+		return []types.ChainRegistryAsset{}, err
 	}
 
+	// panic if queried IBC chain list from chain registry is empty
 	if len(chainList) == 0 {
 		panic("IBC chain list is empty")
 	}
 
-	// query IBC tokens details for each chain
-	tokenList, err := ibctoken.QueryIBCTokensDetails(chainList)
+	log.Info().Msg("getting IBC tokens assets info from chain registry...")
+
+	// query IBC tokens assets info for each chain
+	ibcAssetsDetails, err := ibctoken.QueryIBCAssetsDetailsFromChainRegistry(chainList)
 	if err != nil {
-		log.Error().Err(err).Msg("error while getting IBC tokens details")
+		log.Error().Err(err).Msg("error while getting IBC assets details from chain registry")
 		return nil, err
 	}
 
-	return tokenList, nil
+	return ibcAssetsDetails, nil
 }
 
 // QueryAndSaveLatestIBCTokensInfo queries the latest IBC token details
 // from the given endpoint and stores them inside the database
-func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error {
+func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 	log.Info().Msg("getting IBC tokens list...")
 
 	// query the latest IBC tokens list
-	ibcTokensList, err := w.GetIBCTokensList()
+	ibcTokenAssets, err := w.GetIBCTokensList() // above this ok
 	if err != nil {
-		return fmt.Errorf("error while getting IBC tokens info: %s", err)
+		return fmt.Errorf("error while getting IBC tokens list: %s", err)
 	}
 
 	log.Info().Msg("getting IBC tokens details...")
 
-	// store updated IBC tokens list in database
-	err = w.db.SaveIBCTokens(ibcTokensList)
+	// query the latest IBC tokens details
+	tokens, err := ibctoken.QueryCoinGeckoForIBCTokensDetails(ibcTokenAssets)
 	if err != nil {
-		return fmt.Errorf("error while saving IBC tokens: %s", err)
+		return fmt.Errorf("error while getting IBC tokens info: %s", err)
 	}
+
+	// store updated IBC tokens list in database
+	err = w.db.SaveIBCTokens(tokens)
+	if err != nil {
+		return fmt.Errorf("error while saving IBC tokens in db: %s", err)
+	}
+
+	return nil
+}
+
+// QueryAndSaveLatestIBCTokensInfo queries the latest IBC token details
+// from the given endpoint and stores them inside the database
+func UpdateIBCTokenFromCoingecko(token string) error {
+
+	// log.Info().Msgf("getting %s IBC token details...", token)
+
+	// tokens, err := ibctoken.QueryCoinGeckoForIBCTokensDetails([]string{token})
+	// if err != nil {
+	// 	return fmt.Errorf("error while querying IBC token details: %s", err)
+	// }
+
+	// fmt.Printf("\n\n tokens: %v \n\n ", tokens)
+	// // store updated IBC tokens list in database
+	// // err = w.db.SaveIBCTokens(tokens)
+	// // if err != nil {
+	// // 	return fmt.Errorf("error while saving IBC tokens: %s", err)
+	// // }
 
 	return nil
 }

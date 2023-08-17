@@ -13,7 +13,7 @@ type Database interface {
 
 	// Store given IBC tokens details inside database
 	// Returns error if operation fails
-	SaveIBCTokens(token []types.IBCTokenUnit) error
+	SaveIBCTokens(token []types.IBCToken) error
 
 	// Store latest tokens price in database
 	// Returns error if operation fails

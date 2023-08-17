@@ -1,16 +1,12 @@
 package token_price
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"math"
-	"net/http"
 	"strings"
 
+	ibctoken "github.com/forbole/ibcjuno/parser/ibc_token"
 	types "github.com/forbole/ibcjuno/types"
-	"github.com/forbole/ibcjuno/utils"
-	"github.com/rs/zerolog/log"
 )
 
 // GetLatestTokensPrices queries the remote APIs to get the latest prices
@@ -25,13 +21,16 @@ func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
 
 		var prices []types.MarketTicker
 		query := fmt.Sprintf("/coins/markets?vs_currency=usd&ids=%s", strings.Join(priceIDSlice, ","))
-		err := queryCoinGecko(query, &prices)
+		err := ibctoken.QueryCoingecko(query, &prices)
 		if err != nil {
 			return nil, err
 		}
 		tokensPrices = append(tokensPrices, prices...)
+		fmt.Printf("\n\n query %v \n\n", query)
+
 	}
 
+	fmt.Printf("\n\n price ids len %v \n\n", len(ids))
 
 	return ConvertCoingeckoPrices(tokensPrices), nil
 }
@@ -47,30 +46,6 @@ func ConvertCoingeckoPrices(prices []types.MarketTicker) []types.TokenPrice {
 		)
 	}
 	return tokenPrices
-}
-
-// queryCoinGecko queries the CoinGecko APIs for the given endpoint
-func queryCoinGecko(endpoint string, ptr interface{}) error {
-	resp, err := http.Get(utils.Cfg.API.CoingeckoURL + endpoint)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Error().Err(err).Msg("error while reading response body: ")
-		return err
-	}
-
-	err = json.Unmarshal(bz, &ptr)
-	if err != nil {
-		log.Error().Err(err).Msg("error while unmarshaling response body: ")
-		return err
-	}
-
-	return nil
 }
 
 func SplitPriceIDs(ids []string) [][]string {
