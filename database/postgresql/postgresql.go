@@ -109,14 +109,6 @@ ON CONFLICT DO NOTHING`
 	return nil
 }
 
-// Close implements database.Database
-func (db *Database) Close() {
-	err := db.Sql.Close()
-	if err != nil {
-		log.Error().Err(err).Msg("error while closing connection: ")
-	}
-}
-
 // SaveIBCTokens allows to save the given IBC tokens details inside database
 func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	// Store tokens name
@@ -128,7 +120,7 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	var tokenUnitParams []interface{}
 
 	// Store IBC token details
-	tokenIBCStmt := `INSERT INTO token_ibc_denom_new (denom, origin_chain, target_denom, target_chain,
+	tokenIBCStmt := `INSERT INTO token_ibc (origin_denom, origin_chain, target_denom, target_chain,
 		is_stale, trade_url, timestamp) VALUES `
 	var tokenIBCParams []interface{}
 
@@ -192,4 +184,12 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	log.Info().Msg("** finished processing and storing IBC tokens info in database! ** ")
 
 	return err
+}
+
+// Close implements database.Database
+func (db *Database) Close() {
+	err := db.Sql.Close()
+	if err != nil {
+		log.Error().Err(err).Msg("error while closing connection: ")
+	}
 }
