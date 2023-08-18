@@ -31,7 +31,7 @@ func (w Worker) StartFetchingLatestIBCTokensInfo() error {
 // GetIBCTokensList queries the latest IBC chain list
 // and latest IBC token details from the given endpoint
 func (w *Worker) GetIBCTokensList() ([]types.ChainRegistryAsset, error) {
-	log.Info().Msg("getting IBC chain list from chain registry...")
+	log.Info().Msg("*** Getting IBC chain list from chain registry... ***")
 
 	// query list of IBC supported networks
 	chainList, err := ibctoken.QueryIBCChainListFromChainRegistry()
@@ -45,7 +45,7 @@ func (w *Worker) GetIBCTokensList() ([]types.ChainRegistryAsset, error) {
 		panic("IBC chain list is empty")
 	}
 
-	log.Info().Msg("getting IBC tokens assets info from chain registry...")
+	log.Info().Msg("*** Getting IBC tokens assets info from chain registry... ***")
 
 	// query IBC tokens assets info for each chain
 	ibcAssetsDetails, err := ibctoken.QueryIBCAssetsDetailsFromChainRegistry(chainList)
@@ -60,7 +60,7 @@ func (w *Worker) GetIBCTokensList() ([]types.ChainRegistryAsset, error) {
 // QueryAndSaveLatestIBCTokensInfo queries the latest IBC token details
 // from the given endpoint and stores them inside the database
 func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
-	log.Info().Msg("getting IBC tokens list...")
+	log.Info().Msg("*** Getting IBC tokens list... ***")
 
 	// query the latest IBC tokens list
 	ibcTokenAssets, err := w.GetIBCTokensList() // above this ok
@@ -68,7 +68,7 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 		return fmt.Errorf("error while getting IBC tokens list: %s", err)
 	}
 
-	log.Info().Msg("getting IBC tokens details...")
+	log.Info().Msg("*** Getting IBC tokens details... ***")
 
 	// query the latest IBC tokens details
 	tokens, err := ibctoken.QueryCoinGeckoForIBCTokensDetails(ibcTokenAssets)

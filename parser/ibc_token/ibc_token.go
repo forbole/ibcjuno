@@ -131,14 +131,14 @@ func QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) ([]types.
 	fmt.Printf("\n\n missedCoingeckoTokens %v \n\n", missedCoingeckoTokens)
 
 	if len(missedCoingeckoTokens) > 0 {
-		log.Info().Msg("refetching previously skipped tokens due to 429 error...")
+		log.Info().Msg("*** Refetching previously skipped tokens due to 429 error... ***")
 		_, err := QueryCoinGeckoForIBCTokensDetails(missedCoingeckoTokens)
 		if err != nil {
 			return nil, err
 		}
 
 	} else {
-		log.Info().Msg("finished processing all networks...")
+		log.Info().Msg("*** Finished processing all networks... Success! ***")
 
 	}
 
@@ -159,7 +159,7 @@ func QueryCoingecko(endpoint string, ptr interface{}) error {
 
 	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
-		log.Info().Msgf("error 404: coin %s info not found... skipping..", endpoint)
+		log.Info().Msgf("error 404: %s info not found... skipping...", endpoint)
 		return nil
 	} else if resp.StatusCode == 429 {
 		return fmt.Errorf("error 429: too many requests... will try to refetch again... ")
