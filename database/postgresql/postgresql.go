@@ -105,7 +105,22 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 
 	query = query[:len(query)-1] // Remove trailing ","
 	query += `
-ON CONFLICT DO NOTHING`
+ON CONFLICT (price_id) DO UPDATE 
+		SET name = excluded.name,
+			image = excluded.image, 
+			price = excluded.price, 
+			market_cap = excluded.market_cap, 
+			market_cap_rank = excluded.market_cap_rank, 
+			fully_diluted_valuation = excluded.fully_diluted_valuation, 
+			total_volume = excluded.total_volume, 
+			high_24h = excluded.high_24h, 
+			low_24h = excluded.low_24h, 
+			circulating_supply = excluded.circulating_supply, 
+			total_supply = excluded.total_supply, 
+			max_supply = excluded.max_supply, 
+			ath = excluded.ath, 
+			atl = excluded.atl, 
+			timestamp = excluded.timestamp`
 
 	_, err := db.Sql.Exec(query, param...)
 	if err != nil {

@@ -19,7 +19,7 @@ CREATE TABLE token_unit
 CREATE TABLE token_price
 (
     id                       SERIAL                      NOT NULL PRIMARY KEY,
-    price_id                 TEXT                        NOT NULL,
+    price_id                 TEXT                        NOT NULL UNIQUE,
     name                     TEXT                        NOT NULL,
     image                    TEXT,
     price                    DECIMAL                     NOT NULL,
