@@ -30,13 +30,12 @@ type CoinGeckoTokenDetailsResponse struct {
 }
 
 type CoinGeckoTicker struct {
-	Denom       string    `json:"base" yaml:"base"`
-	OriginChain string    `json:"coin_id" yaml:"coin_id"`
-	TargetDenom string    `json:"target" yaml:"target"`
-	TargetChain string    `json:"target_coin_id" yaml:"target_coin_id"`
-	IsStale     bool      `json:"is_stale" yaml:"is_stale"`
-	TradeURL    string    `json:"trade_url" yaml:"trade_url"`
-	Timestamp   time.Time `json:"timestamp" yaml:"timestamp"`
+	OriginDenom        string    `json:"base" yaml:"base"`
+	OriginChainPriceID string    `json:"coin_id" yaml:"coin_id"`
+	TargetDenom        string    `json:"target" yaml:"target"`
+	TargetChainPriceID string    `json:"target_coin_id" yaml:"target_coin_id"`
+	TradeURL           string    `json:"trade_url" yaml:"trade_url"`
+	Timestamp          time.Time `json:"timestamp" yaml:"timestamp"`
 }
 
 type IBCToken struct {

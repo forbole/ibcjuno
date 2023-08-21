@@ -43,10 +43,9 @@ CREATE INDEX token_price_timestamp_index ON token_price (timestamp);
 CREATE TABLE token_ibc
 (
   origin_denom   TEXT     NOT NULL,
-  origin_chain   TEXT     NOT NULL,
+  origin_chain_price_id   TEXT     NOT NULL,
   target_denom   TEXT     NOT NULL,
-  target_chain   TEXT     NOT NULL,
-  is_stale       TEXT     NOT NULL,
+  target_chain_price_id   TEXT     NOT NULL,
   trade_url      TEXT     NOT NULL,
   timestamp      TIMESTAMP WITHOUT TIME ZONE NOT NULL 
 );
