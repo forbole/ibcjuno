@@ -129,8 +129,8 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	var tokenUnitParams []interface{}
 
 	// Store IBC token details
-	tokenIBCStmt := `INSERT INTO token_ibc (origin_denom, origin_chain, target_denom, target_chain,
-		is_stale, trade_url, timestamp) VALUES `
+	tokenIBCStmt := `INSERT INTO token_ibc (origin_denom, origin_chain_price_id, target_denom, target_chain_price_id,
+		trade_url, timestamp) VALUES `
 	var tokenIBCParams []interface{}
 
 	// Initialise the indexes
@@ -158,11 +158,11 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 		}
 
 		for _, ibc := range ibcDenom.Tickers {
-			cj := indexIBCToken * 7
+			cj := indexIBCToken * 6
 
-			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6, cj+7)
-			tokenIBCParams = append(tokenIBCParams, ibc.Denom, ibc.OriginChain, ibc.TargetDenom, ibc.TargetChain,
-				ibc.IsStale, ibc.TradeURL, ibc.Timestamp)
+			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6)
+			tokenIBCParams = append(tokenIBCParams, ibc.OriginDenom, ibc.OriginChainPriceID, ibc.TargetDenom, ibc.TargetChainPriceID,
+				ibc.TradeURL, ibc.Timestamp)
 
 			indexIBCToken++
 		}
