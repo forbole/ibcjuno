@@ -158,10 +158,12 @@ func QueryCoingecko(endpoint string, ptr interface{}) error {
 	}
 
 	defer resp.Body.Close()
+
 	if resp.StatusCode == 404 {
 		log.Info().Msgf("error 404: %s info not found... skipping...", endpoint)
 		return nil
-	} else if resp.StatusCode == 429 {
+	}
+	if resp.StatusCode == 429 {
 		return fmt.Errorf("error 429: too many requests... will try to refetch again... ")
 	}
 
