@@ -2,7 +2,6 @@ package token_price
 
 import (
 	"fmt"
-	"math"
 	"strings"
 
 	ibctoken "github.com/forbole/ibcjuno/parser/ibc_token"
@@ -30,8 +29,6 @@ func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
 
 	}
 
-	fmt.Printf("\n\n price ids len %v \n\n", len(ids))
-
 	return ConvertCoingeckoPrices(tokensPrices), nil
 }
 
@@ -39,9 +36,22 @@ func ConvertCoingeckoPrices(prices []types.MarketTicker) []types.TokenPrice {
 	tokenPrices := make([]types.TokenPrice, len(prices))
 	for i, price := range prices {
 		tokenPrices[i] = types.NewTokenPrice(
+			price.CoingeckoID,
 			price.Symbol,
+			price.Name,
+			price.Image,
 			price.CurrentPrice,
-			int64(math.Trunc(price.MarketCap)),
+			price.MarketCap,
+			price.MarketCapRank,
+			price.FullyDilutedValuation,
+			price.TotalVolume,
+			price.High24Hrs,
+			price.Low24Hrs,
+			price.CirculatingSupply,
+			price.TotalSupply,
+			price.MaxSupply,
+			price.ATH,
+			price.ATL,
 			price.LastUpdated,
 		)
 	}

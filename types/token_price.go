@@ -11,8 +11,8 @@ type MarketTicker struct {
 	CurrentPrice          float64   `json:"current_price"`
 	MarketCap             float64   `json:"market_cap"`
 	MarketCapRank         int64     `json:"market_cap_rank"`
-	FullyDilutedValuation string    `json:"fully_diluted_valuation"`
-	TotalVolume           int64     `json:"total_volume"`
+	FullyDilutedValuation float64   `json:"fully_diluted_valuation"`
+	TotalVolume           float64   `json:"total_volume"`
 	High24Hrs             float64   `json:"high_24h"`
 	Low24Hrs              float64   `json:"low_24h"`
 	CirculatingSupply     float64   `json:"circulating_supply"`
@@ -39,25 +39,25 @@ type TokenPrice struct {
 	Symbol                string    `json:"symbol"`
 	Name                  string    `json:"name"`
 	Image                 string    `json:"image"`
-	Price                 int64     `json:"price"`
-	MarketCap             int64     `json:"market_cap"`
+	Price                 float64   `json:"price"`
+	MarketCap             float64   `json:"market_cap"`
 	MarketCapRank         int64     `json:"market_cap_rank"`
-	FullyDilutedValuation string    `json:"fully_diluted_valuation"`
-	TotalVolume           int64     `json:"total_volume"`
-	High24Hrs             int64     `json:"high_24h"`
-	Low24Hrs              int64     `json:"low_24h"`
-	CirculatingSupply     int64     `json:"circulating_supply"`
-	TotalSupply           int64     `json:"total_supply"`
-	MaxSupply             int64     `json:"max_supply"`
-	ATH                   int64     `json:"ath"`
-	ATL                   int64     `json:"atl"`
+	FullyDilutedValuation float64   `json:"fully_diluted_valuation"`
+	TotalVolume           float64   `json:"total_volume"`
+	High24Hrs             float64   `json:"high_24h"`
+	Low24Hrs              float64   `json:"low_24h"`
+	CirculatingSupply     float64   `json:"circulating_supply"`
+	TotalSupply           float64   `json:"total_supply"`
+	MaxSupply             float64   `json:"max_supply"`
+	ATH                   float64   `json:"ath"`
+	ATL                   float64   `json:"atl"`
 	Timestamp             time.Time `json:"timestamp"`
 }
 
 // NewTokenPrice creates new TokenPrice instance
-func NewTokenPrice(coingeckoID, symbol, name, image string, price, marketCap, marketCapRank int64,
-	fullyDilutedValuation string, totalVolume int64, high24Hrs, low24Hrs, circulatingSupply, totalSupply,
-	maxSupply, ath, atl int64, timestamp time.Time) TokenPrice {
+func NewTokenPrice(coingeckoID, symbol, name, image string, price, marketCap float64, marketCapRank int64,
+	fullyDilutedValuation, totalVolume, high24Hrs, low24Hrs, circulatingSupply, totalSupply,
+	maxSupply, ath, atl float64, timestamp time.Time) TokenPrice {
 	return TokenPrice{
 		CoingeckoID:           coingeckoID,
 		Symbol:                symbol,
