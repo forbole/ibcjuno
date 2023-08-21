@@ -87,13 +87,20 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 		return nil
 	}
 
-	query := `INSERT INTO token_price (unit_name, price, market_cap, timestamp) VALUES`
+	query := `INSERT INTO token_price (price_id, name, image, price,
+		market_cap, market_cap_rank, fully_diluted_valuation, total_volume,
+		high_24h, low_24h, circulating_supply, total_supply, max_supply, 
+		ath, atl, timestamp) VALUES`
 	var param []interface{}
 
 	for i, ticker := range prices {
-		vi := i * 4
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4)
-		param = append(param, ticker.UnitName, ticker.Price, ticker.MarketCap, ticker.Timestamp)
+		vi := i * 16
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
+			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13, vi+14, vi+15, vi+16)
+		param = append(param, ticker.CoingeckoID, ticker.Name, ticker.Image, ticker.Price,
+			ticker.MarketCap, ticker.MarketCapRank, ticker.FullyDilutedValuation, ticker.TotalVolume,
+			ticker.High24Hrs, ticker.Low24Hrs, ticker.CirculatingSupply, ticker.TotalSupply,
+			ticker.MaxSupply, ticker.ATH, ticker.ATL, ticker.Timestamp)
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
@@ -106,6 +113,8 @@ ON CONFLICT DO NOTHING`
 		return err
 	}
 
+	fmt.Printf("\n\n ****** FInished storing token prices in db ***** \n\n")
+
 	return nil
 }
 
@@ -116,7 +125,7 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	var tokenParams []interface{}
 
 	// Store token unit details
-	tokenUnitStmt := `INSERT INTO token_unit (token_name, denom, exponent, price_id) VALUES `
+	tokenUnitStmt := `INSERT INTO token_unit (token_name, symbol, denom, exponent, price_id) VALUES `
 	var tokenUnitParams []interface{}
 
 	// Store IBC token details
@@ -134,15 +143,15 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 		tokenParams = append(tokenParams, ibcDenom.Name)
 
 		for _, denomUnit := range ibcDenom.DenomUnits {
-			di := indexTokenUnits * 4
+			di := indexTokenUnits * 5
 
-			tokenUnitStmt += fmt.Sprintf("($%d,$%d,$%d,$%d),", di+1, di+2, di+3, di+4)
+			tokenUnitStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", di+1, di+2, di+3, di+4, di+5)
 
-			if denomUnit.Exponent == 0 {
-				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, denomUnit.Denom, denomUnit.Exponent, "")
+			if denomUnit.Exponent > 0 {
+				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, ibcDenom.Symbol, denomUnit.Denom, denomUnit.Exponent, ibcDenom.CoingeckoID)
 
 			} else {
-				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, denomUnit.Denom, denomUnit.Exponent, ibcDenom.CoingeckoID)
+				tokenUnitParams = append(tokenUnitParams, ibcDenom.Name, ibcDenom.Symbol, denomUnit.Denom, denomUnit.Exponent, "")
 			}
 
 			indexTokenUnits++
