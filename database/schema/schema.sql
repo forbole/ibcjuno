@@ -47,6 +47,9 @@ CREATE TABLE token_ibc
   target_denom   TEXT     NOT NULL,
   target_chain_price_id   TEXT     NOT NULL,
   trade_url      TEXT     NOT NULL,
-  timestamp      TIMESTAMP WITHOUT TIME ZONE NOT NULL 
+  timestamp      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+
+ CONSTRAINT unique_token_ibc UNIQUE (origin_denom, origin_chain_price_id, target_denom, target_chain_price_id)
+
 );
 
