@@ -15,6 +15,10 @@ type Database interface {
 	// Returns error if operation fails
 	SaveIBCTokens(token []types.IBCToken) error
 
+	// Store given tokens details inside database
+	// Returns error if operation fails
+	SaveTokens(token []types.ChainRegistryAsset) error
+
 	// Store latest tokens price in database
 	// Returns error if operation fails
 	SaveTokensPrices(prices []types.TokenPrice) error
