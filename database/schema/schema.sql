@@ -20,7 +20,7 @@ CREATE TABLE token_price
 (
     id                       SERIAL                      NOT NULL PRIMARY KEY,
     price_id                 TEXT                        NOT NULL UNIQUE,
-    name                     TEXT                        NOT NULL,
+    token_name               TEXT                        NOT NULL,
     image                    TEXT,
     price                    DECIMAL                     NOT NULL,
     market_cap               TEXT                        NOT NULL,
@@ -42,14 +42,15 @@ CREATE INDEX token_price_timestamp_index ON token_price (timestamp);
 
 CREATE TABLE token_ibc
 (
-  origin_denom   TEXT     NOT NULL,
-  origin_chain_price_id   TEXT     NOT NULL,
-  target_denom   TEXT     NOT NULL,
-  target_chain_price_id   TEXT     NOT NULL,
-  trade_url      TEXT     NOT NULL,
-  timestamp      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  token_name              TEXT                        NOT NULL,
+  origin_denom            TEXT                        NOT NULL,
+  origin_chain_price_id   TEXT                        NOT NULL,
+  target_denom            TEXT                        NOT NULL,
+  target_chain_price_id   TEXT                        NOT NULL,
+  trade_url               TEXT                        NOT NULL,
+  timestamp               TIMESTAMP WITHOUT TIME ZONE NOT NULL,
 
- CONSTRAINT unique_token_ibc UNIQUE (origin_denom, origin_chain_price_id, target_denom, target_chain_price_id)
-
+  CONSTRAINT unique_token_ibc UNIQUE (token_name, origin_denom, origin_chain_price_id, target_denom, target_chain_price_id)
 );
+CREATE INDEX token_ibc_timestamp_index ON token_ibc (timestamp);
 

@@ -87,7 +87,7 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 		return nil
 	}
 
-	query := `INSERT INTO token_price (price_id, name, image, price,
+	query := `INSERT INTO token_price (price_id, token_name, image, price,
 		market_cap, market_cap_rank, fully_diluted_valuation, total_volume,
 		high_24h, low_24h, circulating_supply, total_supply, max_supply, 
 		ath, atl, timestamp) VALUES`
@@ -106,7 +106,7 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 	query = query[:len(query)-1] // Remove trailing ","
 	query += `
 ON CONFLICT (price_id) DO UPDATE 
-		SET name = excluded.name,
+		SET token_name = excluded.token_name,
 			image = excluded.image, 
 			price = excluded.price, 
 			market_cap = excluded.market_cap, 
@@ -128,7 +128,7 @@ ON CONFLICT (price_id) DO UPDATE
 		return err
 	}
 
-	fmt.Printf("\n\n ****** FInished storing token prices in db ***** \n\n")
+	log.Info().Msg("*** Finished storing token prices in database ***")
 
 	return nil
 }
@@ -181,8 +181,6 @@ func (db *Database) SaveTokens(token []types.ChainRegistryAsset) error {
 		return fmt.Errorf("error while saving tokens unit: %s", err)
 	}
 
-	log.Info().Msg("** finished processing and storing tokens in database! ** ")
-
 	return err
 }
 
@@ -190,7 +188,7 @@ func (db *Database) SaveTokens(token []types.ChainRegistryAsset) error {
 func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 
 	// Store IBC token details
-	tokenIBCStmt := `INSERT INTO token_ibc (origin_denom, origin_chain_price_id,
+	tokenIBCStmt := `INSERT INTO token_ibc (token_name, origin_denom, origin_chain_price_id,
 		target_denom, target_chain_price_id, trade_url, timestamp) VALUES `
 	var tokenIBCParams []interface{}
 
@@ -199,16 +197,15 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 
 	for _, ibcDenom := range token {
 		for _, ibc := range ibcDenom.Tickers {
-			cj := indexIBCToken * 6
+			cj := indexIBCToken * 7
 
-			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6)
-			tokenIBCParams = append(tokenIBCParams, ibc.OriginDenom, ibc.OriginChainPriceID, ibc.TargetDenom,
+			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6, cj+7)
+			tokenIBCParams = append(tokenIBCParams, ibcDenom.Name, ibc.OriginDenom, ibc.OriginChainPriceID, ibc.TargetDenom,
 				ibc.TargetChainPriceID, ibc.TradeURL, ibc.Timestamp)
 
 			// Increase token index
 			indexIBCToken++
 		}
-
 	}
 
 	tokenIBCStmt = tokenIBCStmt[:len(tokenIBCStmt)-1] // Remove trailing ","
@@ -217,8 +214,6 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	if err != nil {
 		return fmt.Errorf("error while saving IBC tokens: %s", err)
 	}
-
-	log.Info().Msg("** finished processing and storing IBC tokens info in database! ** ")
 
 	return err
 }
