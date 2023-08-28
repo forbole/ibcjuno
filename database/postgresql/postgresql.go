@@ -10,6 +10,7 @@ import (
 
 	database "github.com/forbole/ibcjuno/database"
 	dbtypes "github.com/forbole/ibcjuno/database/types"
+	dbutils "github.com/forbole/ibcjuno/database/utils"
 	types "github.com/forbole/ibcjuno/types"
 	utils "github.com/forbole/ibcjuno/utils"
 )
@@ -87,7 +88,7 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 		return nil
 	}
 
-	query := `INSERT INTO token_price (price_id, token_name, image, price,
+	query := `INSERT INTO token_price (token_name, price_id, image, price,
 		market_cap, market_cap_rank, fully_diluted_valuation, total_volume,
 		high_24h, low_24h, circulating_supply, total_supply, max_supply, 
 		ath, atl, timestamp) VALUES`
@@ -97,7 +98,7 @@ func (db *Database) SaveTokensPrices(prices []types.TokenPrice) error {
 		vi := i * 16
 		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
 			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13, vi+14, vi+15, vi+16)
-		param = append(param, ticker.CoingeckoID, ticker.Name, ticker.Image, ticker.Price,
+		param = append(param, ticker.Name, ticker.CoingeckoID, ticker.Image, ticker.Price,
 			ticker.MarketCap, ticker.MarketCapRank, ticker.FullyDilutedValuation, ticker.TotalVolume,
 			ticker.High24Hrs, ticker.Low24Hrs, ticker.CirculatingSupply, ticker.TotalSupply,
 			ticker.MaxSupply, ticker.ATH, ticker.ATL, ticker.Timestamp)
@@ -184,8 +185,8 @@ func (db *Database) SaveTokens(token []types.ChainRegistryAsset) error {
 	return err
 }
 
-// SaveIBCTokens allows to save the given IBC tokens details inside database
-func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
+// SaveIBCToken allows to save the given IBC token details inside database
+func (db *Database) SaveIBCToken(token types.IBCToken) error {
 
 	// Store IBC token details
 	tokenIBCStmt := `INSERT INTO token_ibc (token_name, origin_denom, origin_chain_price_id,
@@ -195,21 +196,25 @@ func (db *Database) SaveIBCTokens(token []types.IBCToken) error {
 	// Initialise token index
 	indexIBCToken := 0
 
-	for _, ibcDenom := range token {
-		for _, ibc := range ibcDenom.Tickers {
-			cj := indexIBCToken * 7
+	// remove duplicated values retuned from coingecko for tickers
+	tickers := dbutils.RemoveDuplicatedTickers(token.Tickers)
 
-			tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6, cj+7)
-			tokenIBCParams = append(tokenIBCParams, ibcDenom.Name, ibc.OriginDenom, ibc.OriginChainPriceID, ibc.TargetDenom,
-				ibc.TargetChainPriceID, ibc.TradeURL, ibc.Timestamp)
+	for _, ibc := range tickers {
+		cj := indexIBCToken * 7
 
-			// Increase token index
-			indexIBCToken++
-		}
+		tokenIBCStmt += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", cj+1, cj+2, cj+3, cj+4, cj+5, cj+6, cj+7)
+		tokenIBCParams = append(tokenIBCParams, token.Name, ibc.OriginDenom, ibc.OriginChainPriceID, ibc.TargetDenom,
+			ibc.TargetChainPriceID, ibc.TradeURL, ibc.Timestamp)
+
+		// Increase token index
+		indexIBCToken++
 	}
 
 	tokenIBCStmt = tokenIBCStmt[:len(tokenIBCStmt)-1] // Remove trailing ","
-	tokenIBCStmt += " ON CONFLICT DO NOTHING"
+	tokenIBCStmt += `
+ON CONFLICT ON CONSTRAINT unique_token_ibc DO UPDATE 
+	SET trade_url = excluded.trade_url,
+	    timestamp = excluded.timestamp`
 	_, err := db.Sql.Exec(tokenIBCStmt, tokenIBCParams...)
 	if err != nil {
 		return fmt.Errorf("error while saving IBC tokens: %s", err)

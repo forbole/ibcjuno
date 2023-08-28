@@ -141,11 +141,11 @@ func QueryCoingecko(endpoint string, ptr interface{}, queryIBCToken bool) error 
 
 	}
 
-	// wait for 20 seconds if querying IBC token details
+	// wait for 15 seconds if querying IBC token details
 	// to minimise the 429 error chances
 	if queryIBCToken {
-		// wait for 20 seconds
-		time.Sleep(20 * time.Second)
+		// wait for 15 seconds
+		time.Sleep(15 * time.Second)
 	}
 
 	return nil
@@ -162,7 +162,7 @@ func ParseChainName(chainName string) string {
 		return "CANTO"
 	case "fetch-ai":
 		return "Fetch.ai"
-	case "firmachain":
+	case "FirmaChain":
 		return "Firmachain"
 	case "JunoSwap":
 		return "JUNO"
