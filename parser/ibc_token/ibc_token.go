@@ -104,7 +104,7 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 }
 
 // QueryCoingecko queries the CoinGecko APIs for the given endpoint
-func QueryCoingecko(endpoint string, ptr interface{}, queryIBCToken bool) error {
+func QueryCoingecko(endpoint string, ptr interface{}) error {
 	// panic if coingecko url is empty
 	if len(utils.Cfg.API.CoingeckoURL) == 0 {
 		panic("Coingecko url inside config.yaml file is empty")
@@ -119,10 +119,12 @@ func QueryCoingecko(endpoint string, ptr interface{}, queryIBCToken bool) error 
 
 	if resp.StatusCode == 404 {
 		log.Info().Msgf("error 404: %s info not found... skipping...", endpoint)
+		time.Sleep(6 * time.Second)
 		return nil
 	}
 	if resp.StatusCode == 429 {
 		log.Error().Msg("error 429: too many requests... will try to refetch again...")
+		time.Sleep(20 * time.Second)
 		return fmt.Errorf("error 429")
 	}
 
@@ -141,12 +143,7 @@ func QueryCoingecko(endpoint string, ptr interface{}, queryIBCToken bool) error 
 
 	}
 
-	// wait for 15 seconds if querying IBC token details
-	// to minimise the 429 error chances
-	if queryIBCToken {
-		// wait for 15 seconds
-		time.Sleep(15 * time.Second)
-	}
+	time.Sleep(6 * time.Second)
 
 	return nil
 }

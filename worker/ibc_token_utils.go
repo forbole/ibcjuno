@@ -99,7 +99,7 @@ func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsse
 
 		var tokenDetails types.CoinGeckoTokenDetailsResponse
 		query := fmt.Sprintf("/coins/%s/tickers", index.CoingeckoID)
-		err := ibctoken.QueryCoingecko(query, &tokenDetails, true)
+		err := ibctoken.QueryCoingecko(query, &tokenDetails)
 		if err != nil {
 			// time.Sleep(10 * time.Second)
 			missedCoingeckoTokens = append(missedCoingeckoTokens, index)

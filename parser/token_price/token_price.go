@@ -20,7 +20,7 @@ func GetLatestTokensPrices(ids []string) ([]types.TokenPrice, error) {
 
 		var prices []types.MarketTicker
 		query := fmt.Sprintf("/coins/markets?vs_currency=usd&ids=%s", strings.Join(priceIDSlice, ","))
-		err := ibctoken.QueryCoingecko(query, &prices, false)
+		err := ibctoken.QueryCoingecko(query, &prices)
 		if err != nil {
 			return nil, err
 		}
