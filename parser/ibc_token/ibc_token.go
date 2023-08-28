@@ -95,58 +95,16 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 
 	for _, asset := range chainRegistryAsset {
 		if len(asset.CoingeckoID) > 0 {
+			asset.Name = ParseChainName(asset.Name)
 			tokenList = append(tokenList, asset)
 		}
 	}
 
-	// priceIDList := utils.RemoveDuplicates(tokenList)
-
 	return tokenList, nil
 }
 
-// QueryCoinGeckoForIBCTokensDetails queries the remote APIs to get the latest IBC tokens details
-func QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) ([]types.IBCToken, error) {
-	var ibcToken []types.IBCToken
-	var missedCoingeckoTokens []types.ChainRegistryAsset
-
-	for i, index := range ids {
-		log.Info().Msgf("processing %s network... %d/%d ", index.Name, i+1, len(ids))
-
-		if len(index.CoingeckoID) == 0 {
-			continue
-		}
-
-		var tokenDetails types.CoinGeckoTokenDetailsResponse
-		query := fmt.Sprintf("/coins/%s/tickers", index.CoingeckoID)
-		err := QueryCoingecko(query, &tokenDetails)
-		if err != nil {
-			time.Sleep(5 * time.Second)
-			missedCoingeckoTokens = append(missedCoingeckoTokens, index)
-		}
-		if len(tokenDetails.Tickers) > 0 {
-			ibcToken = append(ibcToken, types.NewIBCToken(index.DenomUnits, index.Base, index.Name, index.Display, index.Symbol, index.CoingeckoID, tokenDetails.Tickers))
-		}
-	}
-
-	fmt.Printf("\n\n missedCoingeckoTokens %v \n\n", missedCoingeckoTokens)
-
-	if len(missedCoingeckoTokens) > 0 {
-		log.Info().Msg("*** Refetching previously skipped tokens due to 429 error... ***")
-		_, err := QueryCoinGeckoForIBCTokensDetails(missedCoingeckoTokens)
-		if err != nil {
-			return nil, err
-		}
-
-	} else {
-		log.Info().Msg("*** Finished processing all networks... Success! ***")
-
-	}
-
-	return ibcToken, nil
-}
-
 // QueryCoingecko queries the CoinGecko APIs for the given endpoint
-func QueryCoingecko(endpoint string, ptr interface{}) error {
+func QueryCoingecko(endpoint string, ptr interface{}, queryIBCToken bool) error {
 	// panic if coingecko url is empty
 	if len(utils.Cfg.API.CoingeckoURL) == 0 {
 		panic("Coingecko url inside config.yaml file is empty")
@@ -164,7 +122,8 @@ func QueryCoingecko(endpoint string, ptr interface{}) error {
 		return nil
 	}
 	if resp.StatusCode == 429 {
-		return fmt.Errorf("error 429: too many requests... will try to refetch again... ")
+		log.Error().Msg("error 429: too many requests... will try to refetch again...")
+		return fmt.Errorf("error 429")
 	}
 
 	bz, err := io.ReadAll(resp.Body)
@@ -182,8 +141,129 @@ func QueryCoingecko(endpoint string, ptr interface{}) error {
 
 	}
 
-	// wait for 1 second
-	time.Sleep(1 * time.Second)
+	// wait for 20 seconds if querying IBC token details
+	// to minimise the 429 error chances
+	if queryIBCToken {
+		// wait for 20 seconds
+		time.Sleep(20 * time.Second)
+	}
 
 	return nil
+}
+
+// Parse chain name to the one returned by coingecko
+// to enable tokens relationship
+func ParseChainName(chainName string) string {
+
+	switch chainName {
+	case "Cosmos Hub Atom":
+		return "Cosmos Hub"
+	case "Canto":
+		return "CANTO"
+	case "fetch-ai":
+		return "Fetch.ai"
+	case "firmachain":
+		return "Firmachain"
+	case "JunoSwap":
+		return "JUNO"
+	case "AIOZ":
+		return "AIOZ Network"
+	case "cheqd":
+		return "CHEQD Network"
+	case "Carbon":
+		return "Carbon Protocol"
+	case "Carbon USD Coin":
+		return "Carbon USD"
+	case "Aura":
+		return "Aura Network"
+	case "Crescent":
+		return "Crescent Network"
+	case "Comdex":
+		return "COMDEX"
+	case "Chihuahua":
+		return "Chihuahua Chain"
+	case "Jackal":
+		return "Jackal Protocol"
+	case "CMST":
+		return "Composite"
+	case "Arable USD":
+		return "Arable Protocol"
+	case "Neta":
+		return "NETA"
+	case "LORE":
+		return "Gitopia"
+	case "USD Coin":
+		return "Bridged USD Coin (Axelar)"
+	case "Bonded Crescent":
+		return "Liquid Staking Crescent"
+	case "Marble":
+		return "Marble Dao"
+	case "OKExChain":
+		return "OKT Chain"
+	case "Kuji":
+		return "Kujira"
+	case "NYM":
+		return "Nym"
+	case "MediBloc":
+		return "Medibloc"
+	case "Hard":
+		return "Kava Lend"
+	case "Ki":
+		return "KI"
+	case "Regen Network":
+		return "Regen"
+	case "Nom":
+		return "Onomy Protocol"
+	case "Mars":
+		return "Mars Protocol"
+	case "MNTA":
+		return "MantaDAO"
+	case "Whale":
+		return "White Whale"
+	case "Swap":
+		return "Kava Swap"
+	case "Rizon Chain":
+		return "RIZON"
+	case "ODIN":
+		return "Odin Protocol"
+	case "Realio Network":
+		return "Realio"
+	case "PSTAKE staked ATOM":
+		return "stkATOM"
+	case "Nature Carbon Ton":
+		return "Toucan Protocol: Nature Carbon Tonne"
+	case "DARC":
+		return "Konstellation"
+	case "Cacao":
+		return "Maya Protocol"
+	case "MEME":
+		return "Meme Network"
+	case "Lum":
+		return "Lum Network"
+	case "Flix":
+		return "OmniFlix Network"
+	case "Loop Finance":
+		return "LOOP"
+	case "Luna Classic":
+		return "Terra Luna Classic"
+	case "Secret Network":
+		return "Secret"
+	case "Somm":
+		return "Sommelier"
+	case "FIS":
+		return "Stafi"
+	case "Sifchain Rowan":
+		return "Sifchain"
+	case "stATOM":
+		return "Stride Staked Atom"
+	case "Unification Network":
+		return "Unification"
+	case "Xpla":
+		return "XPLA"
+	case "ERIS Amplified LUNA":
+		return "Eris Amplified Luna"
+	default:
+		return chainName
+	}
+
 }

@@ -13,7 +13,7 @@ type Database interface {
 
 	// Store given IBC tokens details inside database
 	// Returns error if operation fails
-	SaveIBCTokens(token []types.IBCToken) error
+	SaveIBCToken(token types.IBCToken) error
 
 	// Store given tokens details inside database
 	// Returns error if operation fails

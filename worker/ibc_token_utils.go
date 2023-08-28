@@ -68,40 +68,64 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 		return fmt.Errorf("error while getting IBC tokens list: %s", err)
 	}
 
+	// store updated tokens list in database
+	err = w.db.SaveTokens(ibcTokenAssets)
+	if err != nil {
+		return fmt.Errorf("error while saving IBC tokens in db: %s", err)
+	}
+
 	log.Info().Msg("*** Getting IBC tokens details... ***")
 
 	// query the latest IBC tokens details
-	tokens, err := ibctoken.QueryCoinGeckoForIBCTokensDetails(ibcTokenAssets)
+	err = w.QueryCoinGeckoForIBCTokensDetails(ibcTokenAssets)
 	if err != nil {
 		return fmt.Errorf("error while getting IBC tokens info: %s", err)
-	}
-
-	// store updated IBC tokens list in database
-	err = w.db.SaveIBCTokens(tokens)
-	if err != nil {
-		return fmt.Errorf("error while saving IBC tokens in db: %s", err)
 	}
 
 	return nil
 }
 
-// QueryAndSaveLatestIBCTokensInfo queries the latest IBC token details
-// from the given endpoint and stores them inside the database
-func UpdateIBCTokenFromCoingecko(token string) error {
+// QueryCoinGeckoForIBCTokensDetails queries the remote APIs to get the latest IBC tokens details
+// and stores updated values in database
+func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) error {
+	var missedCoingeckoTokens []types.ChainRegistryAsset
+	tickerCount := 0
+	for i, index := range ids {
+		log.Info().Msgf("processing %s network... %d/%d ", index.Name, i+1, len(ids))
 
-	// log.Info().Msgf("getting %s IBC token details...", token)
+		if len(index.CoingeckoID) == 0 {
+			continue
+		}
 
-	// tokens, err := ibctoken.QueryCoinGeckoForIBCTokensDetails([]string{token})
-	// if err != nil {
-	// 	return fmt.Errorf("error while querying IBC token details: %s", err)
-	// }
+		var tokenDetails types.CoinGeckoTokenDetailsResponse
+		query := fmt.Sprintf("/coins/%s/tickers", index.CoingeckoID)
+		err := ibctoken.QueryCoingecko(query, &tokenDetails, true)
+		if err != nil {
+			// time.Sleep(10 * time.Second)
+			missedCoingeckoTokens = append(missedCoingeckoTokens, index)
+		}
+		if len(tokenDetails.Tickers) > 0 {
+			// store updated IBC tokens list in database
+			err = w.db.SaveIBCToken(types.NewIBCToken(index.DenomUnits, index.Base, index.Name, index.Display, index.Symbol, index.CoingeckoID, tokenDetails.Tickers))
+			if err != nil {
+				return fmt.Errorf("error while saving IBC tokens in db: %s", err)
+			}
+		}
+	}
 
-	// fmt.Printf("\n\n tokens: %v \n\n ", tokens)
-	// // store updated IBC tokens list in database
-	// // err = w.db.SaveIBCTokens(tokens)
-	// // if err != nil {
-	// // 	return fmt.Errorf("error while saving IBC tokens: %s", err)
-	// // }
+	if len(missedCoingeckoTokens) > 0 {
+		// time.Sleep(30 * time.Second) // disable for testing
+		log.Info().Msgf("*** Refetching previously skipped tokens due to 429 error... total %v ***", len(missedCoingeckoTokens))
+		err := w.QueryCoinGeckoForIBCTokensDetails(missedCoingeckoTokens)
+		if err != nil {
+			return err
+		}
+	} else {
+		log.Info().Msg("*** Finished processing all networks... Success! ***")
+
+	}
+
+	fmt.Printf("\n\n tickerCount %d \n\n", tickerCount)
 
 	return nil
 }
