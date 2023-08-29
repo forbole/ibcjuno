@@ -30,7 +30,7 @@ func (w Worker) StartFetchingPrices() error {
 // UpdateTokenPrices queries latest IBC token prices
 // and stores updated values in database
 func (w Worker) UpdateTokenPrices() error {
-	log.Info().Msg("updating token prices...")
+	log.Info().Msg("*** Updating tokens prices... ***")
 
 	// Get latest tokens price IDs
 	priceIDList, err := w.db.GetTokensPriceID()
