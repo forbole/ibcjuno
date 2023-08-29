@@ -92,7 +92,6 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 
 	for _, asset := range chainRegistryAsset {
 		if len(asset.CoingeckoID) > 0 {
-			asset.Name = ParseChainName(asset.Name)
 			tokenList = append(tokenList, asset)
 		}
 	}
@@ -140,124 +139,8 @@ func QueryCoingecko(endpoint string, ptr interface{}) error {
 
 	}
 
+	// wait for 6 sec to avoid 429 error
 	time.Sleep(6 * time.Second)
 
 	return nil
-}
-
-// Parse chain name to the one returned by coingecko
-// to enable tokens relationship
-func ParseChainName(chainName string) string {
-
-	switch chainName {
-	case "Cosmos Hub Atom":
-		return "Cosmos Hub"
-	case "Canto":
-		return "CANTO"
-	case "fetch-ai":
-		return "Fetch.ai"
-	case "FirmaChain":
-		return "Firmachain"
-	case "JunoSwap":
-		return "JUNO"
-	case "AIOZ":
-		return "AIOZ Network"
-	case "cheqd":
-		return "CHEQD Network"
-	case "Carbon":
-		return "Carbon Protocol"
-	case "Carbon USD Coin":
-		return "Carbon USD"
-	case "Aura":
-		return "Aura Network"
-	case "Crescent":
-		return "Crescent Network"
-	case "Comdex":
-		return "COMDEX"
-	case "Chihuahua":
-		return "Chihuahua Chain"
-	case "Jackal":
-		return "Jackal Protocol"
-	case "CMST":
-		return "Composite"
-	case "Arable USD":
-		return "Arable Protocol"
-	case "Neta":
-		return "NETA"
-	case "LORE":
-		return "Gitopia"
-	case "USD Coin":
-		return "Bridged USD Coin (Axelar)"
-	case "Bonded Crescent":
-		return "Liquid Staking Crescent"
-	case "Marble":
-		return "Marble Dao"
-	case "OKExChain":
-		return "OKT Chain"
-	case "Kuji":
-		return "Kujira"
-	case "NYM":
-		return "Nym"
-	case "MediBloc":
-		return "Medibloc"
-	case "Hard":
-		return "Kava Lend"
-	case "Ki":
-		return "KI"
-	case "Regen Network":
-		return "Regen"
-	case "Nom":
-		return "Onomy Protocol"
-	case "Mars":
-		return "Mars Protocol"
-	case "MNTA":
-		return "MantaDAO"
-	case "Whale":
-		return "White Whale"
-	case "Swap":
-		return "Kava Swap"
-	case "Rizon Chain":
-		return "RIZON"
-	case "ODIN":
-		return "Odin Protocol"
-	case "Realio Network":
-		return "Realio"
-	case "PSTAKE staked ATOM":
-		return "stkATOM"
-	case "Nature Carbon Ton":
-		return "Toucan Protocol: Nature Carbon Tonne"
-	case "DARC":
-		return "Konstellation"
-	case "Cacao":
-		return "Maya Protocol"
-	case "MEME":
-		return "Meme Network"
-	case "Lum":
-		return "Lum Network"
-	case "Flix":
-		return "OmniFlix Network"
-	case "Loop Finance":
-		return "LOOP"
-	case "Luna Classic":
-		return "Terra Luna Classic"
-	case "Secret Network":
-		return "Secret"
-	case "Somm":
-		return "Sommelier"
-	case "FIS":
-		return "Stafi"
-	case "Sifchain Rowan":
-		return "Sifchain"
-	case "stATOM":
-		return "Stride Staked Atom"
-	case "Unification Network":
-		return "Unification"
-	case "Xpla":
-		return "XPLA"
-	case "ERIS Amplified LUNA":
-		return "Eris Amplified Luna"
-	default:
-		return chainName
-	}
-
 }

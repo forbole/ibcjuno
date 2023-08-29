@@ -68,12 +68,6 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 		return fmt.Errorf("error while getting IBC tokens list: %s", err)
 	}
 
-	// store updated tokens list in database
-	err = w.db.SaveTokens(ibcTokenAssets)
-	if err != nil {
-		return fmt.Errorf("error while saving IBC tokens in db: %s", err)
-	}
-
 	log.Info().Msg("*** Getting IBC tokens details... ***")
 
 	// query the latest IBC tokens details
@@ -103,9 +97,23 @@ func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsse
 			// time.Sleep(10 * time.Second)
 			missedCoingeckoTokens = append(missedCoingeckoTokens, index)
 		}
+
+		// check if the name is not empty
+		if len(tokenDetails.Name) > 0 {
+			// store token name returned from coingecko
+			// to enable tokens relationship
+			index.Name = tokenDetails.Name
+		}
+
+		// store updated tokens list in database
+		err = w.db.SaveTokens([]types.ChainRegistryAsset{index})
+		if err != nil {
+			return fmt.Errorf("error while saving IBC tokens in db: %s", err)
+		}
+
 		if len(tokenDetails.Tickers) > 0 {
 			// store updated IBC tokens list in database
-			err = w.db.SaveIBCToken(types.NewIBCToken(index.DenomUnits, index.Base, index.Name, index.Display, index.Symbol, index.CoingeckoID, tokenDetails.Tickers))
+			err = w.db.SaveIBCToken(types.NewIBCToken(index.DenomUnits, index.Base, tokenDetails.Name, index.Display, index.Symbol, index.CoingeckoID, tokenDetails.Tickers))
 			if err != nil {
 				return fmt.Errorf("error while saving IBC tokens in db: %s", err)
 			}
