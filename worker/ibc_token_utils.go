@@ -89,7 +89,6 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 // and stores updated values in database
 func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) error {
 	var missedCoingeckoTokens []types.ChainRegistryAsset
-	tickerCount := 0
 	for i, index := range ids {
 		log.Info().Msgf("processing %s network... %d/%d ", index.Name, i+1, len(ids))
 
@@ -124,8 +123,6 @@ func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsse
 		log.Info().Msg("*** Finished processing all networks... Success! ***")
 
 	}
-
-	fmt.Printf("\n\n tickerCount %d \n\n", tickerCount)
 
 	return nil
 }

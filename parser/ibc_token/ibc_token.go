@@ -52,9 +52,6 @@ func QueryIBCChainListFromChainRegistry() ([]string, error) {
 		chainList = append(chainList, i.Name)
 	}
 
-	fmt.Printf("\n chainList %v \n", chainList)
-	fmt.Printf("\n chainList length %v \n", len(chainList))
-
 	return chainList, nil
 }
 
