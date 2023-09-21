@@ -19,11 +19,11 @@ func QueryIBCChainListFromChainRegistry() ([]string, error) {
 	var supportedChains []types.ChainRegistryList
 
 	// panic if chain registry url is empty
-	if len(utils.Cfg.API.ChainRegistryURL) == 0 {
+	if len(utils.Cfg.API.ChainRegistryAPIURL) == 0 {
 		panic("Chain registry url inside config.yaml file is empty")
 	}
 
-	resp, err := http.Get(fmt.Sprintf("%s/contents", utils.Cfg.API.ChainRegistryURL))
+	resp, err := http.Get(fmt.Sprintf("%s/contents", utils.Cfg.API.ChainRegistryAPIURL))
 	if err != nil {
 		return nil, err
 	}
@@ -66,14 +66,14 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 	var tokenList []types.ChainRegistryAsset
 
 	// panic if chain registry url is empty
-	if len(utils.Cfg.API.ChainRegistryURL) == 0 {
+	if len(utils.Cfg.API.ChainRegistryRawURL) == 0 {
 		panic("Chain registry url inside config.yaml file is empty")
 	}
 
 	// query each chain IBC token details
 	for _, network := range chainList {
 		var ibcDenom types.ChainRegistryAssetsList
-		url := fmt.Sprintf("%s/master/%s/assetlist.json", utils.Cfg.API.ChainRegistryURL, network)
+		url := fmt.Sprintf("%s/master/%s/assetlist.json", utils.Cfg.API.ChainRegistryRawURL, network)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err
@@ -82,17 +82,18 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			return nil, fmt.Errorf("error: %s ", resp.Status)
+			log.Info().Msgf("assets.json file not found for %s chain, skipping...", network)
+			continue
 		}
 
 		bz, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Error().Err(err).Msg("error while reading response body: ")
+			return nil, fmt.Errorf("error while reading %s chain response body: %s", network, err)
 		}
 
 		err = json.Unmarshal(bz, &ibcDenom)
 		if err != nil {
-			log.Info().Msgf("assets.json file not found for %s chain, skipping...", network)
+			return nil, fmt.Errorf("error while unmarshaling %s chain response body: %s",network, err)
 		}
 
 		chainRegistryAsset = append(chainRegistryAsset, ibcDenom.Assets...)
