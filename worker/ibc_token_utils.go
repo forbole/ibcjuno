@@ -83,37 +83,37 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 // and stores updated values in database
 func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) error {
 	var missedCoingeckoTokens []types.ChainRegistryAsset
-	for i, index := range ids {
-		log.Info().Msgf("processing %s network... %d/%d ", index.Name, i+1, len(ids))
+	for i, token := range ids {
+		log.Info().Msgf("processing %s network... %d/%d ", token.Name, i+1, len(ids))
 
-		if len(index.CoingeckoID) == 0 {
+		if len(token.CoingeckoID) == 0 {
 			continue
 		}
 
 		var tokenDetails types.CoinGeckoTokenDetailsResponse
-		query := fmt.Sprintf("/coins/%s/tickers", index.CoingeckoID)
+		query := fmt.Sprintf("/coins/%s/tickers", token.CoingeckoID)
 		err := ibctoken.QueryCoingecko(query, &tokenDetails)
 		if err != nil {
 			// time.Sleep(10 * time.Second)
-			missedCoingeckoTokens = append(missedCoingeckoTokens, index)
+			missedCoingeckoTokens = append(missedCoingeckoTokens, token)
 		}
 
-		// check if the name is not empty
+		// check if the name is empty
 		if len(tokenDetails.Name) > 0 {
 			// store token name returned from coingecko
 			// to enable tokens relationship
-			index.Name = tokenDetails.Name
+			token.Name = tokenDetails.Name
 		}
 
 		// store updated tokens list in database
-		err = w.db.SaveTokens([]types.ChainRegistryAsset{index})
+		err = w.db.SaveTokens([]types.ChainRegistryAsset{token})
 		if err != nil {
 			return fmt.Errorf("error while saving IBC tokens in db: %s", err)
 		}
 
 		if len(tokenDetails.Tickers) > 0 {
 			// store updated IBC tokens list in database
-			err = w.db.SaveIBCToken(types.NewIBCToken(index.DenomUnits, index.Base, tokenDetails.Name, index.Display, index.Symbol, index.CoingeckoID, tokenDetails.Tickers))
+			err = w.db.SaveIBCToken(types.NewIBCToken(token.DenomUnits, token.Base, tokenDetails.Name, token.Display, token.Symbol, token.CoingeckoID, tokenDetails.Tickers))
 			if err != nil {
 				return fmt.Errorf("error while saving IBC tokens in db: %s", err)
 			}

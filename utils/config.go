@@ -17,7 +17,7 @@ type Config struct {
 
 	API      apiconfig.APIConfig           `yaml:"api"`
 	Database databaseconfig.DatabaseConfig `yaml:"database"`
-	Parser   parserconfig.ParserConfig     `yaml:"parsing"`
+	Parser   parserconfig.ParserConfig     `yaml:"parser"`
 }
 
 // NewConfig builds new Config instance
