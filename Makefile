@@ -1,81 +1,94 @@
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT  := $(shell git log -1 --format='%H')
 
-all: ci-lint ci-test install
+export GO111MODULE = on
 
 ###############################################################################
-###                          Tools & Dependencies                           ###
+###                                   All                                   ###
 ###############################################################################
 
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	@go mod download
+all: lint build test-unit
 
-go.sum: go.mod
-	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
-	@go mod tidy
+###############################################################################
+###                                Build flags                              ###
+###############################################################################
+
+LD_FLAGS = -X github.com/forbole/ibcjuno/cmd.Version=$(VERSION) \
+	-X github.com/forbole/ibcjuno/cmd.Commit=$(COMMIT)
+BUILD_FLAGS :=  -ldflags '$(LD_FLAGS)'
+
+ifeq ($(LINK_STATICALLY),true)
+  LD_FLAGS += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+BUILD_FLAGS :=  -ldflags '$(LD_FLAGS)' -tags "$(build_tags)"
 
 ###############################################################################
 ###                                  Build                                  ###
 ###############################################################################
 
-LD_FLAGS = -X github.com/forbole/ibcjuno/cmd.Version=$(VERSION) \
- 	-X github.com/forbole/ibcjuno/cmd.Commit=$(COMMIT)
-
-BUILD_FLAGS := -ldflags '$(LD_FLAGS)'
-
 build: go.sum
 ifeq ($(OS),Windows_NT)
 	@echo "building ibcjuno binary..."
-	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno.exe  ./cmd/ibcjuno
+	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno.exe ./cmd/ibcjuno
 else
 	@echo "building ibcjuno binary..."
 	@go build -mod=readonly $(BUILD_FLAGS) -o build/ibcjuno ./cmd/ibcjuno
 endif
+.PHONY: build
+
+###############################################################################
+###                                 Install                                 ###
+###############################################################################
 
 install: go.sum
 	@echo "installing ibcjuno binary..."
 	@go install -mod=readonly $(BUILD_FLAGS) ./cmd/ibcjuno
+.PHONY: install
+
+###############################################################################
+###                           Tests & Simulation                            ###
+###############################################################################
+
+stop-docker-test:
+	@echo "Stopping Docker container..."
+	@docker stop ibcjuno-test-db || true && docker rm ibcjuno-test-db || true
+.PHONY: stop-docker-test
+
+start-docker-test: stop-docker-test
+	@echo "Starting Docker container..."
+	@docker run --name ibcjuno-test-db -e POSTGRES_USER=ibcjuno -e POSTGRES_PASSWORD=password -e POSTGRES_DB=ibcjuno -d -p 6433:5432 postgres
+.PHONY: start-docker-test
+
+test-unit: start-docker-test
+	@echo "Executing unit tests..."
+	@go test -mod=readonly -v -coverprofile coverage.txt ./...
+.PHONY: test-unit
 
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
+golangci_lint_cmd=github.com/golangci/golangci-lint/cmd/golangci-lint
 
 lint:
-	golangci-lint run --out-format=tab --timeout=10m
+	@echo "--> Running linter"
+	@go run $(golangci_lint_cmd) run --timeout=10m
 
 lint-fix:
-	golangci-lint run --fix --out-format=tab --issues-exit-code=0 --timeout=10m
+	@echo "--> Running linter"
+	@go run $(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+
 .PHONY: lint lint-fix
 
 format:
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs gofmt -w -s
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -name '*.pb.go' -not -path "./venv" | xargs goimports -w -local github.com/forbole/ibcjuno
+	find . -name '*.go' -type f -not -path "*.git*" -not -name '*.pb.go' -not -name '*_mocks.go' | xargs gofmt -w -s
+	find . -name '*.go' -type f -not -path "*.git*" -not -name '*.pb.go' -not -name '*_mocks.go' | xargs misspell -w
+	find . -name '*.go' -type f -not -path "*.git*" -not -name '*.pb.go' -not -name '*_mocks.go' | xargs goimports -w -local github.com/forbole/ibcjuno
 .PHONY: format
-
-###############################################################################
-###                             Tests & CI                                  ###
-###############################################################################
-
-coverage:
-	@echo "viewing test coverage..."
-	@go tool cover --html=coverage.out
-
-ci-test:
-	@echo "executing unit tests..."
-	@go test -mod=readonly -v -coverprofile coverage.out ./... 
-
-ci-lint:
-	@echo "running GolangCI-Lint..."
-	@GO111MODULE=on golangci-lint run
-	@echo "formatting..."
-	@find . -name '*.go' -type f -not -path "*.git*" | xargs gofmt -d -s
-	@echo "verifying modules..."
-	@go mod verify
 
 clean:
 	rm -f tools-stamp ./build/**
-
-.PHONY: install build ci-test ci-lint coverage clean
+.PHONY: clean
