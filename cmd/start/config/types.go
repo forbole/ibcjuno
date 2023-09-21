@@ -1,8 +1,8 @@
 package config
 
 import (
-	database "github.com/forbole/ibcjuno/db"
-	builder "github.com/forbole/ibcjuno/db/builder"
+	database "github.com/forbole/ibcjuno/database"
+	builder "github.com/forbole/ibcjuno/database/builder"
 	utils "github.com/forbole/ibcjuno/utils"
 )
 

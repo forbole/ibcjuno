@@ -1,6 +1,7 @@
 package start
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -45,13 +46,15 @@ func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 	worker := workerctx.NewWorker(ctx)
 	waitGroup.Add(1)
 
-	// get the config
-	cfg := utils.Cfg
-
-	// store tokens defined in config file inside the database
-	err := worker.StoreTokensDetails(cfg)
-	if err != nil {
-		return err
+	// check if refresh ibc tokens been set to true
+	// inside config file
+	if utils.Cfg.Parser.RefreshIBCTokensOnStart {
+		// update IBC tokens details in database to the latest
+		// before starting the worker
+		err := worker.QueryAndSaveLatestIBCTokensInfo()
+		if err != nil {
+			return fmt.Errorf("error while saving IBC tokens: %s", err)
+		}
 	}
 
 	// start worker
@@ -69,14 +72,14 @@ func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 // trapSignal will listen for any OS signal and invoke Close on Database
 // and Done on the main WaitGroup allowing the main process to exit gracefully.
 func trapSignal(ctx *workerctx.WorkerContext) {
-	var sigCh = make(chan os.Signal)
+	var sigCh = make(chan os.Signal, 1)
 
 	signal.Notify(sigCh, syscall.SIGTERM)
 	signal.Notify(sigCh, syscall.SIGINT)
 
 	go func() {
 		sig := <-sigCh
-		log.Info().Str("signal", sig.String()).Msg("caught signal; shutting down...")
+		log.Info().Str("signal", sig.String()).Msg("caught signal; IBCJuno is shutting down...")
 		defer ctx.Database.Close()
 		defer waitGroup.Done()
 	}()

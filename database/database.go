@@ -1,7 +1,7 @@
 package db
 
 import (
-	utils "github.com/forbole/ibcjuno/db/config"
+	utils "github.com/forbole/ibcjuno/database/config"
 	types "github.com/forbole/ibcjuno/types"
 )
 
@@ -11,17 +11,17 @@ type Database interface {
 	// Returns error if operation fails
 	GetTokensPriceID() ([]string, error)
 
+	// Store given IBC tokens details inside database
+	// Returns error if operation fails
+	SaveIBCToken(token types.IBCToken) error
+
+	// Store given tokens details inside database
+	// Returns error if operation fails
+	SaveTokens(token []types.ChainRegistryAsset) error
+
 	// Store latest tokens price in database
 	// Returns error if operation fails
 	SaveTokensPrices(prices []types.TokenPrice) error
-
-	// Query the latest tokens prices from coingecko
-	// Returns error if operation fails
-	GetTokenPrices() ([]types.TokenPrice, error)
-
-	// Store given token details inside database
-	// Returns error if operation fails
-	SaveToken(token types.Token) error
 
 	// Close closes the connection to the database
 	Close()
