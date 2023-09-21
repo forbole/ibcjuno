@@ -15,14 +15,14 @@ var (
 type Config struct {
 	bytes []byte
 
-	API      apiconfig.APIConfig           `yaml:"api"`
+	API      apiconfig.Config              `yaml:"api"`
 	Database databaseconfig.DatabaseConfig `yaml:"database"`
 	Parser   parserconfig.ParserConfig     `yaml:"parser"`
 }
 
 // NewConfig builds new Config instance
 func NewConfig(
-	api apiconfig.APIConfig,
+	api apiconfig.Config,
 	dbConfig databaseconfig.DatabaseConfig,
 	parserConfig parserconfig.ParserConfig,
 ) Config {

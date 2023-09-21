@@ -4,16 +4,16 @@ import (
 	database "github.com/forbole/ibcjuno/database"
 )
 
-// WorkerContext represents the context that is shared with worker
-type WorkerContext struct {
+// Context represents the context that is shared with worker
+type Context struct {
 	Database database.Database
 }
 
-// NewWorkerContext builds new WorkerContext instance
+// NewWorkerContext builds new Context instance
 func NewWorkerContext(
 	db database.Database,
-) *WorkerContext {
-	return &WorkerContext{
+) *Context {
+	return &Context{
 		Database: db,
 	}
 }

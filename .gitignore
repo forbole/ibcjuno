@@ -15,3 +15,12 @@ tools-stamp
 # configuration
 *.toml
 *.DS_Store
+
+build/
+
+# Configuration
+*.json
+config.yaml
+
+# Coverage
+coverage.*
