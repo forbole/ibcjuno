@@ -13,7 +13,7 @@ type Worker struct {
 }
 
 // NewWorker allows to create a new Worker implementation.
-func NewWorker(ctx *WorkerContext) Worker {
+func NewWorker(ctx *Context) Worker {
 	return Worker{db: ctx.Database}
 }
 

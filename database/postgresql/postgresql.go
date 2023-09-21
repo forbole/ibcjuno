@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq" // nolint
+	//
+	_ "github.com/lib/pq"
 	"github.com/rs/zerolog/log"
 
 	database "github.com/forbole/ibcjuno/database"

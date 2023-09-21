@@ -2,12 +2,12 @@ package utils
 
 import (
 	"database/sql"
-	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	"gopkg.in/yaml.v3"
+	yaml "gopkg.in/yaml.v3"
 )
 
 var (
@@ -46,7 +46,7 @@ func Write(cfg Config, path string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(path, bz, 0666)
+	return os.WriteFile(path, bz, 0600)
 }
 
 // RemoveDuplicates function removes duplicate values

@@ -16,19 +16,19 @@ func DefaultConfigCreator(_ *cobra.Command) config.Config {
 	return config.DefaultConfig()
 }
 
-// InitConfig contains the configuration data for "init" command
-type InitConfig struct {
+// Config contains the configuration data for "init" command
+type Config struct {
 	createConfig ConfigCreator
 }
 
-// NewInitConfig allows to build a new InitConfig instance
-func NewInitConfig() *InitConfig {
-	return &InitConfig{}
+// NewInitConfig allows to build a new Config instance
+func NewInitConfig() *Config {
+	return &Config{}
 }
 
 // GetConfigCreator return the function that should be run to create a configuration from a set of
 // flags specified by the user with the "init" command
-func (c *InitConfig) GetConfigCreator() ConfigCreator {
+func (c *Config) GetConfigCreator() ConfigCreator {
 	if c.createConfig == nil {
 		return DefaultConfigCreator
 	}

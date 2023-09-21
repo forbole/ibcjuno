@@ -1,14 +1,14 @@
 package api
 
-type APIConfig struct {
+type Config struct {
 	ChainRegistryAPIURL string `yaml:"chain_registry_api_url"`
 	ChainRegistryRawURL string `yaml:"chain_registry_raw_url"`
 	CoingeckoURL        string `yaml:"coingecko_url"`
 }
 
 // NewAPIConfig creates new APIConfig instance
-func NewAPIConfig(chainRegistryAPIURL, chainRegistryRawURL, coingeckoURL string) APIConfig {
-	return APIConfig{
+func NewAPIConfig(chainRegistryAPIURL, chainRegistryRawURL, coingeckoURL string) Config {
+	return Config{
 		ChainRegistryAPIURL: chainRegistryAPIURL,
 		ChainRegistryRawURL: chainRegistryRawURL,
 		CoingeckoURL:        coingeckoURL,
@@ -16,7 +16,7 @@ func NewAPIConfig(chainRegistryAPIURL, chainRegistryRawURL, coingeckoURL string)
 }
 
 // DefaultAPIConfig returns default APIConfig instance
-func DefaultAPIConfig() APIConfig {
+func DefaultAPIConfig() Config {
 	return NewAPIConfig(
 		"https://api.github.com/repos/cosmos/chain-registry",
 		"https://raw.githubusercontent.com/cosmos/chain-registry",

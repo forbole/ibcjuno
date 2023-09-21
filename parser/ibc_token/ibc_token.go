@@ -73,8 +73,7 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 	// query each chain IBC token details
 	for _, network := range chainList {
 		var ibcDenom types.ChainRegistryAssetsList
-		url := fmt.Sprintf("%s/master/%s/assetlist.json", utils.Cfg.API.ChainRegistryRawURL, network)
-		resp, err := http.Get(url)
+		resp, err := http.Get(fmt.Sprintf("%s/master/%s/assetlist.json", utils.Cfg.API.ChainRegistryRawURL, network))
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +92,7 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 
 		err = json.Unmarshal(bz, &ibcDenom)
 		if err != nil {
-			return nil, fmt.Errorf("error while unmarshaling %s chain response body: %s",network, err)
+			return nil, fmt.Errorf("error while unmarshaling %s chain response body: %s", network, err)
 		}
 
 		chainRegistryAsset = append(chainRegistryAsset, ibcDenom.Assets...)

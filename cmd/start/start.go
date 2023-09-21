@@ -33,14 +33,14 @@ func NewStartCmd(cmdCfg *types.StartConfig) *cobra.Command {
 				return err
 			}
 
-			return StartIBCJuno(context)
+			return IBCJuno(context)
 		},
 	}
 }
 
-// StartIBCJuno represents the function that is called when
+// IBCJuno represents the function that is called when
 // "start" command is executed
-func StartIBCJuno(ctx *workerctx.WorkerContext) error {
+func IBCJuno(ctx *workerctx.Context) error {
 
 	// create worker responsible for fetching latest prices
 	worker := workerctx.NewWorker(ctx)
@@ -71,7 +71,7 @@ func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 
 // trapSignal will listen for any OS signal and invoke Close on Database
 // and Done on the main WaitGroup allowing the main process to exit gracefully.
-func trapSignal(ctx *workerctx.WorkerContext) {
+func trapSignal(ctx *workerctx.Context) {
 	var sigCh = make(chan os.Signal, 1)
 
 	signal.Notify(sigCh, syscall.SIGTERM)
