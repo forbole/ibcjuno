@@ -1,46 +1,39 @@
 package config
 
 type DatabaseConfig struct {
-	Name               string `yaml:"name"`
-	Host               string `yaml:"host"`
-	Port               int64  `yaml:"port"`
-	User               string `yaml:"user"`
-	Password           string `yaml:"password"`
-	SSLMode            string `yaml:"ssl_mode,omitempty"`
-	Schema             string `yaml:"schema,omitempty"`
+	URL                string `yaml:"url"`
 	MaxOpenConnections int    `yaml:"max_open_connections"`
 	MaxIdleConnections int    `yaml:"max_idle_connections"`
+	SSLModeEnable      string `yaml:"ssl_mode_enable"`
+	SSLRootCert        string `yaml:"ssl_root_cert"`
+	SSLCert            string `yaml:"ssl_cert"`
+	SSLKey             string `yaml:"ssl_key"`
 }
 
 // NewDatabaseConfig creates new DatabaseConfig instance
 func NewDatabaseConfig(
-	name, host string, port int64, user string, password string,
-	sslMode string, schema string,
+	url, sslModeEnable, sslRootCert, sslCert, sslKey string,
 	maxOpenConnections int, maxIdleConnections int,
 ) DatabaseConfig {
 	return DatabaseConfig{
-		Name:               name,
-		Host:               host,
-		Port:               port,
-		User:               user,
-		Password:           password,
-		SSLMode:            sslMode,
-		Schema:             schema,
+		URL:                url,
 		MaxOpenConnections: maxOpenConnections,
 		MaxIdleConnections: maxIdleConnections,
+		SSLModeEnable:      sslModeEnable,
+		SSLRootCert:        sslRootCert,
+		SSLCert:            sslCert,
+		SSLKey:             sslKey,
 	}
 }
 
 // DefaultDatabaseConfig returns the default instance of DatabaseConfig
 func DefaultDatabaseConfig() DatabaseConfig {
 	return NewDatabaseConfig(
-		"database-name",
-		"localhost",
-		5432,
-		"user",
-		"password",
+		"postgresql://user:password@localhost:5432/database-name?sslmode=disable&search_path=public",
+		"false",
 		"",
-		"public",
+		"",
+		"",
 		1,
 		1,
 	)

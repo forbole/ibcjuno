@@ -1,7 +1,6 @@
 package postgresql
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -12,40 +11,33 @@ import (
 	dbtypes "github.com/forbole/ibcjuno/database/types"
 	dbutils "github.com/forbole/ibcjuno/database/utils"
 	types "github.com/forbole/ibcjuno/types"
+	"github.com/forbole/ibcjuno/types/env"
 	utils "github.com/forbole/ibcjuno/utils"
 )
 
 // Database defines a wrapper around a SQL database and implements functionality
 // for data aggregation and exporting.
 type Database struct {
-	Sql  *sql.DB
-	Sqlx *sqlx.DB
+	SQL *sqlx.DB
 }
 
 // ConnectDatabase creates database connection with configuration set inside
 // config.yaml file. It returns a database connection handle or an error
 // if the connection fails.
 func ConnectDatabase(ctx *database.DatabaseContext) (database.Database, error) {
-	sslMode := "disable"
-	if ctx.Cfg.SSLMode != "" {
-		sslMode = ctx.Cfg.SSLMode
+	dbURI := dbutils.GetEnvOr(env.DatabaseURI, ctx.Cfg.URL)
+	dbEnableSSL := dbutils.GetEnvOr(env.DatabaseSSLModeEnable, ctx.Cfg.SSLModeEnable)
+
+	// Configure SSL certificates (optional)
+	if dbEnableSSL == "true" {
+		dbRootCert := dbutils.GetEnvOr(env.DatabaseSSLRootCert, ctx.Cfg.SSLRootCert)
+		dbCert := dbutils.GetEnvOr(env.DatabaseSSLCert, ctx.Cfg.SSLCert)
+		dbKey := dbutils.GetEnvOr(env.DatabaseSSLKey, ctx.Cfg.SSLKey)
+		dbURI += fmt.Sprintf(" sslmode=require sslrootcert=%s sslcert=%s sslkey=%s",
+			dbRootCert, dbCert, dbKey)
 	}
 
-	schema := "public"
-	if ctx.Cfg.Schema != "" {
-		schema = ctx.Cfg.Schema
-	}
-
-	connStr := fmt.Sprintf(
-		"host=%s port=%d dbname=%s user=%s sslmode=%s search_path=%s",
-		ctx.Cfg.Host, ctx.Cfg.Port, ctx.Cfg.Name, ctx.Cfg.User, sslMode, schema,
-	)
-
-	if ctx.Cfg.Password != "" {
-		connStr += fmt.Sprintf(" password=%s", ctx.Cfg.Password)
-	}
-
-	postgresDb, err := sql.Open("postgres", connStr)
+	postgresDb, err := sqlx.Open("postgres", dbURI)
 	if err != nil {
 		return nil, err
 	}
@@ -55,10 +47,12 @@ func ConnectDatabase(ctx *database.DatabaseContext) (database.Database, error) {
 	postgresDb.SetMaxIdleConns(ctx.Cfg.MaxIdleConnections)
 
 	return &Database{
-		Sql:  postgresDb,
-		Sqlx: sqlx.NewDb(postgresDb, "postgresql"),
+		SQL: postgresDb,
 	}, nil
 }
+
+// type check to ensure interface is properly implemented
+var _ database.Database = &Database{}
 
 // GetTokensPriceID returns the slice of prices id for all tokens stored inside database
 func (db *Database) GetTokensPriceID() ([]string, error) {
@@ -66,7 +60,7 @@ func (db *Database) GetTokensPriceID() ([]string, error) {
 	var units []string
 
 	query := `SELECT * FROM token_unit`
-	err := db.Sqlx.Select(&tokens, query)
+	err := db.SQL.Select(&tokens, query)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +117,7 @@ ON CONFLICT (price_id) DO UPDATE
 			atl = excluded.atl, 
 			timestamp = excluded.timestamp`
 
-	_, err := db.Sql.Exec(query, param...)
+	_, err := db.SQL.Exec(query, param...)
 	if err != nil {
 		log.Error().Err(err).Msg("error while saving tokens prices: ")
 		return err
@@ -170,14 +164,14 @@ func (db *Database) SaveTokens(token []types.ChainRegistryAsset) error {
 
 	tokenStmt = tokenStmt[:len(tokenStmt)-1] // Remove trailing ","
 	tokenStmt += " ON CONFLICT DO NOTHING"
-	_, err := db.Sql.Exec(tokenStmt, tokenParams...)
+	_, err := db.SQL.Exec(tokenStmt, tokenParams...)
 	if err != nil {
 		return fmt.Errorf("error while saving tokens: %s", err)
 	}
 
 	tokenUnitStmt = tokenUnitStmt[:len(tokenUnitStmt)-1] // Remove trailing ","
 	tokenUnitStmt += " ON CONFLICT DO NOTHING"
-	_, err = db.Sql.Exec(tokenUnitStmt, tokenUnitParams...)
+	_, err = db.SQL.Exec(tokenUnitStmt, tokenUnitParams...)
 	if err != nil {
 		return fmt.Errorf("error while saving tokens unit: %s", err)
 	}
@@ -215,7 +209,7 @@ func (db *Database) SaveIBCToken(token types.IBCToken) error {
 ON CONFLICT ON CONSTRAINT unique_token_ibc DO UPDATE 
 	SET trade_url = excluded.trade_url,
 	    timestamp = excluded.timestamp`
-	_, err := db.Sql.Exec(tokenIBCStmt, tokenIBCParams...)
+	_, err := db.SQL.Exec(tokenIBCStmt, tokenIBCParams...)
 	if err != nil {
 		return fmt.Errorf("error while saving IBC tokens: %s", err)
 	}
@@ -225,7 +219,7 @@ ON CONFLICT ON CONSTRAINT unique_token_ibc DO UPDATE
 
 // Close implements database.Database
 func (db *Database) Close() {
-	err := db.Sql.Close()
+	err := db.SQL.Close()
 	if err != nil {
 		log.Error().Err(err).Msg("error while closing connection: ")
 	}

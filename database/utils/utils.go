@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/forbole/ibcjuno/types"
+import (
+	"os"
+
+	"github.com/forbole/ibcjuno/types"
+)
 
 func RemoveDuplicatedTickers(tickers []types.CoinGeckoTicker) []types.CoinGeckoTicker {
 	result := []types.CoinGeckoTicker{}
@@ -23,4 +27,12 @@ func RemoveDuplicatedTickers(tickers []types.CoinGeckoTicker) []types.CoinGeckoT
 		}
 	}
 	return result
+}
+
+// GetEnvOr returns the value of the ENV variable having the given key, or the provided orValue
+func GetEnvOr(envKey string, orValue string) string {
+	if envValue := os.Getenv(envKey); envValue != "" {
+		return envValue
+	}
+	return orValue
 }
