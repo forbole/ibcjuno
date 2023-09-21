@@ -3,6 +3,7 @@ package utils
 import (
 	apiconfig "github.com/forbole/ibcjuno/api/config"
 	databaseconfig "github.com/forbole/ibcjuno/database/config"
+	parserconfig "github.com/forbole/ibcjuno/parser/config"
 )
 
 var (
@@ -16,16 +17,19 @@ type Config struct {
 
 	API      apiconfig.APIConfig           `yaml:"api"`
 	Database databaseconfig.DatabaseConfig `yaml:"database"`
+	Parser   parserconfig.ParserConfig     `yaml:"parsing"`
 }
 
 // NewConfig builds new Config instance
 func NewConfig(
 	api apiconfig.APIConfig,
 	dbConfig databaseconfig.DatabaseConfig,
+	parserConfig parserconfig.ParserConfig,
 ) Config {
 	return Config{
 		API:      api,
 		Database: dbConfig,
+		Parser:   parserConfig,
 	}
 }
 
@@ -34,6 +38,7 @@ func DefaultConfig() Config {
 	return NewConfig(
 		apiconfig.DefaultAPIConfig(),
 		databaseconfig.DefaultDatabaseConfig(),
+		parserconfig.DefaultParserConfig(),
 	)
 }
 

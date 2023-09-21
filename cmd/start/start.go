@@ -46,11 +46,15 @@ func StartIBCJuno(ctx *workerctx.WorkerContext) error {
 	worker := workerctx.NewWorker(ctx)
 	waitGroup.Add(1)
 
-	// update IBC tokens details in database to the latest
-	// before starting the worker
-	err := worker.QueryAndSaveLatestIBCTokensInfo()
-	if err != nil {
-		return fmt.Errorf("error while saving IBC tokens: %s", err)
+	// check if refresh ibc tokens been set to true
+	// inside config file
+	if utils.Cfg.Parser.RefreshIBCTokensOnStart {
+		// update IBC tokens details in database to the latest
+		// before starting the worker
+		err := worker.QueryAndSaveLatestIBCTokensInfo()
+		if err != nil {
+			return fmt.Errorf("error while saving IBC tokens: %s", err)
+		}
 	}
 
 	// start worker
