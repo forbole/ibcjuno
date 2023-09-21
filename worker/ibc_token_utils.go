@@ -83,11 +83,6 @@ func (w *Worker) QueryAndSaveLatestIBCTokensInfo() error { // start
 // and stores updated values in database
 func (w *Worker) QueryCoinGeckoForIBCTokensDetails(ids []types.ChainRegistryAsset) error {
 	var missedCoingeckoTokens []types.ChainRegistryAsset
-
-	if len(ids) == 0 {
-		return fmt.Errorf("tokens id list is empty")
-	}
-
 	for i, token := range ids {
 		log.Info().Msgf("processing %s network... %d/%d ", token.Name, i+1, len(ids))
 
