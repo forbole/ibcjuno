@@ -23,7 +23,7 @@ func QueryIBCChainListFromChainRegistry() ([]string, error) {
 		panic("Chain registry url inside config.yaml file is empty")
 	}
 
-	resp, err := http.Get(utils.Cfg.API.ChainRegistryURL)
+	resp, err := http.Get(fmt.Sprintf("%s/contents",utils.Cfg.API.ChainRegistryURL))
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +61,15 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 	var chainRegistryAsset []types.ChainRegistryAsset
 	var tokenList []types.ChainRegistryAsset
 
-	// panic if chain registry assets url is empty
-	if len(utils.Cfg.API.ChainRegistryAssetsURL) == 0 {
-		panic("Chain registry assets url inside config.yaml file is empty")
+	// panic if chain registry url is empty
+	if len(utils.Cfg.API.ChainRegistryURL) == 0 {
+		panic("Chain registry url inside config.yaml file is empty")
 	}
 
 	// query each chain IBC token details
 	for _, network := range chainList {
 		var ibcDenom types.ChainRegistryAssetsList
-		url := fmt.Sprintf(utils.Cfg.API.ChainRegistryAssetsURL, network)
+		url := fmt.Sprintf("%s/master/%s/assetlist.json",utils.Cfg.API.ChainRegistryURL, network)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err
