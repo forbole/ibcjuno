@@ -23,33 +23,35 @@ func QueryIBCChainListFromChainRegistry() ([]string, error) {
 		panic("Chain registry url inside config.yaml file is empty")
 	}
 
-	resp, err := http.Get(fmt.Sprintf("%s/contents",utils.Cfg.API.ChainRegistryURL))
+	resp, err := http.Get(fmt.Sprintf("%s/contents", utils.Cfg.API.ChainRegistryURL))
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		defer resp.Body.Close()
 
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Error().Err(err).Msg("error while reading response body: ")
-		return nil, err
-	}
-
-	err = json.Unmarshal(bz, &supportedChains)
-	if err != nil {
-		log.Error().Err(err).Msg("error while unmarshaling response body: ")
-		return nil, err
-	}
-
-	for _, i := range supportedChains {
-		if strings.Contains(i.Name, ".") || strings.Contains(i.Name, "_") ||
-			strings.Contains(i.Name, "LICENSE") || strings.Contains(i.Name, "testnets") {
-			// skip useless values
-			continue
+		bz, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Error().Err(err).Msg("error while reading response body hereeeeeee: ")
+			return nil, err
 		}
 
-		chainList = append(chainList, i.Name)
+		err = json.Unmarshal(bz, &supportedChains)
+		if err != nil {
+			log.Error().Err(err).Msg("error while unmarshaling response body tutaj hiii: ")
+			return nil, err
+		}
+
+		for _, i := range supportedChains {
+			if strings.Contains(i.Name, ".") || strings.Contains(i.Name, "_") ||
+				strings.Contains(i.Name, "LICENSE") || strings.Contains(i.Name, "testnets") {
+				// skip unused files
+				continue
+			}
+
+			chainList = append(chainList, i.Name)
+		}
 	}
 
 	return chainList, nil
@@ -69,25 +71,27 @@ func QueryIBCAssetsDetailsFromChainRegistry(chainList []string) ([]types.ChainRe
 	// query each chain IBC token details
 	for _, network := range chainList {
 		var ibcDenom types.ChainRegistryAssetsList
-		url := fmt.Sprintf("%s/master/%s/assetlist.json",utils.Cfg.API.ChainRegistryURL, network)
+		url := fmt.Sprintf("%s/master/%s/assetlist.json", utils.Cfg.API.ChainRegistryURL, network)
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, err
 		}
 
-		defer resp.Body.Close()
+		if resp.StatusCode == 200 {
+			defer resp.Body.Close()
 
-		bz, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Error().Err(err).Msg("error while reading response body: ")
+			bz, err := io.ReadAll(resp.Body)
+			if err != nil {
+				log.Error().Err(err).Msg("error while reading response body: ")
+			}
+
+			err = json.Unmarshal(bz, &ibcDenom)
+			if err != nil {
+				log.Info().Msgf("assets.json file not found for %s chain, skipping...", network)
+			}
+
+			chainRegistryAsset = append(chainRegistryAsset, ibcDenom.Assets...)
 		}
-
-		err = json.Unmarshal(bz, &ibcDenom)
-		if err != nil {
-			log.Info().Msgf("assets.json file not found for %s chain, skipping...", network)
-		}
-
-		chainRegistryAsset = append(chainRegistryAsset, ibcDenom.Assets...)
 	}
 
 	for _, asset := range chainRegistryAsset {
